@@ -35,6 +35,10 @@ public class Ordine {
     @JoinColumn(name = "ID_carrello", nullable = false)
     private Carrello ordineCarrello;
 
+    @ManyToOne
+    @JoinColumn(name = "ID_metodo_pagamento", nullable = false)
+    private MetodoPagamento metodoPagamento;
+
     @OneToMany(mappedBy = "ordine", cascade = CascadeType.ALL)
     private List<DettaglioOrdine> dettagliOrdini;
 
