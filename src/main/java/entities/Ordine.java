@@ -22,6 +22,9 @@ public class Ordine {
     @Basic
     @Column(name = "Stato", nullable = false, length = -1)
     private String stato;
+    @Basic
+    @Column(name = "Spedizione", nullable = false, length = -1)
+    private String spedizione;
 
     //RELAZIONI
     @ManyToOne(cascade = CascadeType.ALL)
