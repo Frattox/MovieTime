@@ -1,18 +1,13 @@
 package entities;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.math.BigInteger;
 import java.util.Objects;
 
-@Setter
-@Getter
-@EqualsAndHashCode
-@ToString
+//@Data specifica setter, getter, toString, equals e hashCode
+@Data
 @Entity
 public class DettaglioCarrello {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,10 +16,10 @@ public class DettaglioCarrello {
     private int idDettaglioCarrello;
     @Basic
     @Column(name = "Quantita", nullable = false, precision = 0)
-    private BigInteger quantita;
+    private int quantita;
     @Basic
     @Column(name = "Prezzo_unita", nullable = false, precision = 0)
-    private BigInteger prezzoUnita;
+    private float prezzoUnita;
 
     //RELAZIONI
     @ManyToOne(cascade = CascadeType.ALL)

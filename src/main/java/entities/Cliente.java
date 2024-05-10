@@ -1,19 +1,14 @@
 package entities;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.sql.Date;
 import java.util.List;
 import java.util.Objects;
 
-@Setter
-@Getter
-@EqualsAndHashCode
-@ToString
+//@Data specifica setter, getter, toString, equals e hashCode
+@Data
 @Entity
 public class Cliente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)

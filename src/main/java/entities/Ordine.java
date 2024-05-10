@@ -1,11 +1,14 @@
 package entities;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.sql.Date;
 import java.util.List;
 import java.util.Objects;
 
+//@Data specifica setter, getter, toString, equals e hashCode
+@Data
 @Entity
 public class Ordine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)

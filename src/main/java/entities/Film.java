@@ -1,18 +1,13 @@
 package entities;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.math.BigInteger;
 import java.util.Objects;
 
-@Setter
-@Getter
-@EqualsAndHashCode
-@ToString
+//@Data specifica setter, getter, toString, equals e hashCode
+@Data
 @Entity
 public class Film {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +19,7 @@ public class Film {
     private String titolo;
     @Basic
     @Column(name = "Anno_uscita", nullable = false, precision = 0)
-    private BigInteger annoUscita;
+    private int annoUscita;
     @Basic
     @Column(name = "Genere", nullable = false, length = -1)
     private String genere;
@@ -34,6 +29,9 @@ public class Film {
     @Basic
     @Column(name = "Prezzo", nullable = false, precision = 0)
     private float prezzo;
+    @Basic
+    @Column(name = "Quantita", nullable = false, precision = 0)
+    private int quantita;
 
     @Version
     @Basic
