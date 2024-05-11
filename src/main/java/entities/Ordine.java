@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,13 +19,13 @@ public class Ordine {
 
     @Basic
     @Column(name = "Data_ordine", nullable = false)
-    private Date dataOrdine;
+    private LocalDateTime dataOrdine;
     @Basic
     @Column(name = "Stato", nullable = false, length = -1)
     private String stato;
     @Basic
-    @Column(name = "Spedizione", nullable = false, length = -1)
-    private String spedizione;
+    @Column(name = "Indirizzo", nullable = false, length = -1)
+    private String indirizzo;
 
     //RELAZIONI
     @ManyToOne(cascade = CascadeType.ALL)

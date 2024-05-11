@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface FilmRepository extends JpaRepository<Film, Integer> {
 
+    Film findByIdFilm(int id);
 
     //credo sia più utile Titolo+Formato
     Film findFilmByTitolo(String titolo);
@@ -24,6 +25,7 @@ public interface FilmRepository extends JpaRepository<Film, Integer> {
     List<Film> findByPrezzoBefore(int max);
 
     //per find by regista forse sarebbe meglio utilizzare direttamente la lista memorizzata dalla classe regista
+
 
 
 

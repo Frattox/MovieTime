@@ -7,6 +7,7 @@ import entities.Carrello;
 import entities.DettaglioCarrello;
 import entities.Film;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repositories.DettaglioCarrelloRepository;
@@ -21,31 +22,45 @@ import java.util.List;
 public class CartService {
 
     @Autowired
-    private FilmRepository filmRepository;
+    private DettaglioCarrelloRepository dettaglioCarrelloRepository;
 
     @Autowired
-    private DettaglioCarrelloRepository dettaglioCarrelloRepository;
+    private FilmRepository filmRepository;
 
     @Autowired
     private EntityManager entityManager;
 
+    private Long lastVersion(Film film)
+    {
+        return filmRepository.findByIdFilm(film.getIdFilm()).getVersione();
+    }
+
+    @Transactional
     public void addInCart(Carrello carrello, Film film, int quantity)
             throws FilmWornOutException, InvalidParameterException
     {
         //verifica che la quantità sia positiva
         if(quantity <= 0) throw new InvalidParameterException();
 
+        //controllo della versione (è giusto?)
+        long version = film.getVersione();
+        if(version != lastVersion(film))
+            entityManager.refresh(film);
+
         //verifica della disponibilità del film
-        int newQuantity = film.getQuantita() - quantity;
-        if(newQuantity <= 0) throw new FilmWornOutException();
+        int filmDisponibility = film.getQuantita();
+        if(filmDisponibility - quantity < 0) throw new FilmWornOutException();
 
         //aggiunta del film al carrello
         //Caso 1. controllo se il film era già presente nel carrello, in tal caso aumento la sua quantità
         DettaglioCarrello dettaglioInCart = dettaglioCarrelloRepository.findByFilmAndCarrello(film, carrello);
         if(dettaglioInCart!=null)
         {
+            //verifica della disponibilità del film, considerando la quantità già presente nel carrello
             int previousQuantity = dettaglioInCart.getQuantita();
-            dettaglioInCart.setQuantita(previousQuantity+quantity);
+            int newQuantity = previousQuantity+quantity;
+            if(newQuantity - filmDisponibility < 0) throw new FilmWornOutException();
+            dettaglioInCart.setQuantita(newQuantity);
         }
 
         //Caso 2. se il film non era già presente, allora bisogna aggiungerlo per la prima volta
@@ -66,9 +81,11 @@ public class CartService {
         //per quanto riguarda la modifica della disponibilità nel film, questo spetta al repository dell'ordine
     }
 
+    @Transactional
     public List<DettaglioCarrello> getAllDettagliCarrello(){return dettaglioCarrelloRepository.findAll();}
 
     //in caso di restituire tutti e due i formati,è meglio restituire una lista con max due elementi
+    @Transactional
     public List<DettaglioCarrello> getSingleDettaglioCarrello(String titolo, Carrello carrello)
     {
         List<DettaglioCarrello> ret = new LinkedList<>();
