@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repositories.DettaglioCarrelloRepository;
+import repositories.DettaglioOrdineRepository;
 import repositories.FilmRepository;
 import resources.exceptions.FilmWornOutException;
 
@@ -42,10 +43,17 @@ public class CartService {
         //verifica che la quantità sia positiva
         if(quantity <= 0) throw new InvalidParameterException();
 
-        //controllo della versione (è giusto?)
-        long version = film.getVersione();
-        if(version != lastVersion(film))
+        //così non ho problemi di dati incongruenti nel DB, dopo aver controllato che il film
+        //sia presente nel DB
+        if(filmRepository.existsByIdFilm(film.getIdFilm()))
             entityManager.refresh(film);
+        else
+            throw new InvalidParameterException();
+
+        //controllo della versione (è giusto?)
+//        long version = film.getVersione();
+//        if(version != lastVersion(film))
+//            entityManager.refresh(film);
 
         //verifica della disponibilità del film
         int filmDisponibility = film.getQuantita();
@@ -59,7 +67,7 @@ public class CartService {
             //verifica della disponibilità del film, considerando la quantità già presente nel carrello
             int previousQuantity = dettaglioInCart.getQuantita();
             int newQuantity = previousQuantity+quantity;
-            if(newQuantity - filmDisponibility < 0) throw new FilmWornOutException();
+            if(filmDisponibility - newQuantity < 0) throw new FilmWornOutException();
             dettaglioInCart.setQuantita(newQuantity);
         }
 
@@ -84,12 +92,24 @@ public class CartService {
     @Transactional
     public List<DettaglioCarrello> getAllDettagliCarrello(){return dettaglioCarrelloRepository.findAll();}
 
+
+    @Transactional
+    public DettaglioCarrello getSingleDettaglioCarrello(Film film, Carrello carrello)
+    {
+        DettaglioCarrello ret = dettaglioCarrelloRepository.findByFilmAndCarrello(film,carrello);
+        if(ret==null)
+            throw new InvalidParameterException();
+        return ret;
+    }
+
+
     //in caso di restituire tutti e due i formati,è meglio restituire una lista con max due elementi
     @Transactional
     public List<DettaglioCarrello> getSingleDettaglioCarrello(String titolo, Carrello carrello)
     {
         List<DettaglioCarrello> ret = new LinkedList<>();
         //cerco il film nei dettagli carrello
+        //NOTA: sarebbe meglio la query con "like", così in caso il titolo non l'ha scritto completo
         for(DettaglioCarrello dc: carrello.getDettagliCarrello())
         {
             if(titolo.equals(dc.getFilm().getTitolo())) ret.add(dc);

@@ -11,6 +11,8 @@ public interface FilmRepository extends JpaRepository<Film, Integer> {
 
     Film findByIdFilm(int id);
 
+    boolean existsByIdFilm(int id);
+
     //credo sia più utile Titolo+Formato
     Film findFilmByTitolo(String titolo);
 
