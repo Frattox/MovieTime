@@ -7,11 +7,10 @@ import entities.Carrello;
 import entities.DettaglioCarrello;
 import entities.Film;
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repositories.DettaglioCarrelloRepository;
-import repositories.DettaglioOrdineRepository;
 import repositories.FilmRepository;
 import resources.exceptions.FilmWornOutException;
 
@@ -31,10 +30,6 @@ public class CartService {
     @Autowired
     private EntityManager entityManager;
 
-    private Long lastVersion(Film film)
-    {
-        return filmRepository.findByIdFilm(film.getIdFilm()).getVersione();
-    }
 
     @Transactional
     public void addInCart(Carrello carrello, Film film, int quantity)
@@ -89,11 +84,24 @@ public class CartService {
         //per quanto riguarda la modifica della disponibilità nel film, questo spetta al repository dell'ordine
     }
 
+    //quando si clicca sul singolo dettaglio carrello
     @Transactional
+    public void removeDettaglioCarrello(Film film, Carrello carrello)
+    {
+        DettaglioCarrello rem = dettaglioCarrelloRepository.findByFilmAndCarrello(film,carrello);
+        if(rem!=null)
+            dettaglioCarrelloRepository.deleteByIdDettaglioCarrello(rem);
+    }
+
+    //selezioni più di un film da eliminare
+    @Transactional
+    public void removeDettagliCarrello(List<Film> films, Carrello carrello){dettaglioCarrelloRepository.deleteAllByFilm(films, carrello);}
+
+    @Transactional(readOnly = true)
     public List<DettaglioCarrello> getAllDettagliCarrello(){return dettaglioCarrelloRepository.findAll();}
 
-
-    @Transactional
+    //quando si clicca sul singolo dettaglio carrello
+    @Transactional(readOnly = true)
     public DettaglioCarrello getSingleDettaglioCarrello(Film film, Carrello carrello)
     {
         DettaglioCarrello ret = dettaglioCarrelloRepository.findByFilmAndCarrello(film,carrello);
@@ -103,21 +111,24 @@ public class CartService {
     }
 
 
-    //in caso di restituire tutti e due i formati,è meglio restituire una lista con max due elementi
-    @Transactional
-    public List<DettaglioCarrello> getSingleDettaglioCarrello(String titolo, Carrello carrello)
-    {
-        List<DettaglioCarrello> ret = new LinkedList<>();
-        //cerco il film nei dettagli carrello
-        //NOTA: sarebbe meglio la query con "like", così in caso il titolo non l'ha scritto completo
-        for(DettaglioCarrello dc: carrello.getDettagliCarrello())
-        {
-            if(titolo.equals(dc.getFilm().getTitolo())) ret.add(dc);
+    //quando si cerca il titolo (anche incompleto)
+    @Transactional(readOnly = true)
+    public List<DettaglioCarrello> getSingleDettaglioCarrello(String titolo, Carrello carrello){return dettaglioCarrelloRepository.findByTitleLike(titolo, carrello);}
 
-            //sono stati trovati entrambi i formati
-            if(ret.size()>1) break;
-        }
-        return ret;
-    }
+    //tutti i dettagli carrello ordinati in senso DECRESCENTE per titolo
+    @Transactional(readOnly = true)
+    public List<DettaglioCarrello> getDettagliCarrelloOrderedByTitoloDesc(Carrello carrello){return dettaglioCarrelloRepository.findAllOrderByTitoloDesc(carrello);}
+
+    //tutti i dettagli carrello ordinati in senso CRESCENTE per titolo
+    @Transactional(readOnly = true)
+    public List<DettaglioCarrello> getDettagliCarrelloOrderedByTitoloAsc(Carrello carrello){return dettaglioCarrelloRepository.findAllOrderByTitoloAsc(carrello);}
+
+    //tutti i dettagli carrello ordinati in senso DECRESCENTE per prezzo
+    @Transactional(readOnly = true)
+    public List<DettaglioCarrello> getDettagliCarrelloOrderedByPrezzoDesc(Carrello carrello){return dettaglioCarrelloRepository.findAllOrderByPrezzoDesc(carrello);}
+
+    //tutti i dettagli carrello ordinati in senso CRESCENTE per prezzo
+    @Transactional(readOnly = true)
+    public List<DettaglioCarrello> getDettagliCarrelloOrderedByPrezzoAsc(Carrello carrello){return dettaglioCarrelloRepository.findAllOrderByPrezzoAsc(carrello);}
 
 }
