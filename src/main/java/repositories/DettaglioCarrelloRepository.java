@@ -14,10 +14,12 @@ import java.util.List;
 public interface DettaglioCarrelloRepository extends JpaRepository<DettaglioCarrello,Integer> {
 
 
+    boolean existsByIdDettaglioCarrelloAAndCarrello(DettaglioCarrello dettaglioCarrello, Carrello carrello);
+
     void deleteByIdDettaglioCarrello(DettaglioCarrello dettaglioCarrello);
 
-    @Query("DELETE FROM DettaglioCarrello d WHERE d.film IN :films AND d.carrello=:carrello")
-    void deleteAllByFilm(@Param("films") List<Film> films, @Param("carrello") Carrello carrello);
+    @Query("DELETE FROM DettaglioCarrello d WHERE d.film IN ?1 AND d.carrello=?2")
+    void deleteAllByFilm(List<Film> films,Carrello carrello);
 
     DettaglioCarrello findByFilmAndCarrello(Film film, Carrello carrello);
 
@@ -35,6 +37,12 @@ public interface DettaglioCarrelloRepository extends JpaRepository<DettaglioCarr
 
     @Query("SELECT d FROM DettaglioCarrello d WHERE d.carrello=:carrello ORDER BY d.film.prezzo ASC")
     List<DettaglioCarrello> findAllOrderByPrezzoAsc(@Param("carrello") Carrello carrello);
+
+    @Query("SELECT d FROM DettaglioCarrello d WHERE d.carrello=:carrello ORDER BY d.film.prezzo ASC")
+    List<DettaglioCarrello> findAllByOrderByQuantitaAsc(@Param("carrello") Carrello carrello);
+
+    @Query("SELECT d FROM DettaglioCarrello d WHERE d.carrello=:carrello ORDER BY d.film.prezzo DESC")
+    List<DettaglioCarrello> findAllByOrderByQuantitaDesc(@Param("carrello") Carrello carrello);
 
 }
 //print(''suca'')

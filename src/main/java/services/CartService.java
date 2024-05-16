@@ -31,6 +31,7 @@ public class CartService {
     private EntityManager entityManager;
 
 
+    //aggiunta dalla lista dei prodotti
     @Transactional
     public void addInCart(Carrello carrello, Film film, int quantity)
             throws FilmWornOutException, InvalidParameterException
@@ -40,7 +41,7 @@ public class CartService {
 
         //così non ho problemi di dati incongruenti nel DB, dopo aver controllato che il film
         //sia presente nel DB
-        if(filmRepository.existsByIdFilm(film.getIdFilm()))
+        if(filmRepository.existsByIdFilm(film))
             entityManager.refresh(film);
         else
             throw new InvalidParameterException();
@@ -82,6 +83,24 @@ public class CartService {
         dettaglioCarrelloRepository.save(dettaglioInCart);
 
         //per quanto riguarda la modifica della disponibilità nel film, questo spetta al repository dell'ordine
+    }
+
+    //modifica della quantità presente nel dettaglio carrello
+    @Transactional
+    public void updateInCart(Carrello carrello, DettaglioCarrello dettaglioCarrello, int quantity)
+    {
+        //verifica che la quantità sia positiva e che il film sia disponibile rispetto alla quantità fornita
+        if(quantity <= 0 || dettaglioCarrello.getFilm().getIdFilm() - quantity < 0) throw new InvalidParameterException();
+
+        //così non ho problemi di dati incongruenti nel DB, dopo aver controllato che il film
+        //sia presente nel DB
+        if(dettaglioCarrelloRepository.existsByIdDettaglioCarrelloAAndCarrello(dettaglioCarrello, carrello))
+            entityManager.refresh(dettaglioCarrello);
+        else
+            throw new InvalidParameterException();
+
+        dettaglioCarrello.setQuantita(quantity);
+        dettaglioCarrelloRepository.save(dettaglioCarrello);
     }
 
     //quando si clicca sul singolo dettaglio carrello
@@ -130,5 +149,14 @@ public class CartService {
     //tutti i dettagli carrello ordinati in senso CRESCENTE per prezzo
     @Transactional(readOnly = true)
     public List<DettaglioCarrello> getDettagliCarrelloOrderedByPrezzoAsc(Carrello carrello){return dettaglioCarrelloRepository.findAllOrderByPrezzoAsc(carrello);}
+
+    //tutti i dettagli carrello ordinati in senso CRESCENTE per quantita
+    @Transactional(readOnly = true)
+    public List<DettaglioCarrello> getDettagliCarrelloOrderedByQuantitaAsc(Carrello carrello){return dettaglioCarrelloRepository.findAllByOrderByQuantitaAsc(carrello);}
+
+    //tutti i dettagli carrello ordinati in senso DECRESCENTE per prezzo
+    @Transactional(readOnly = true)
+    public List<DettaglioCarrello> getDettagliCarrelloOrderedByQuantitaDesc(Carrello carrello){return dettaglioCarrelloRepository.findAllByOrderByQuantitaDesc(carrello);}
+
 
 }

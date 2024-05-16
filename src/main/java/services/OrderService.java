@@ -33,7 +33,7 @@ public class OrderService {
         Ordine ordine = new Ordine();
         ordine.setOrdineCliente(cliente);
         ordine.setMetodoPagamento(metodoPagamento);
-        ordine.setOrdineCarrello(cliente.getCarrello());
+        ordine.setOrdineCarrello(carrello);
         ordine.setIndirizzo(indirizzo);
         ordine.setStato("Preparazione");
         ordine.setDataOrdine(LocalDateTime.now());
@@ -79,4 +79,6 @@ public class OrderService {
 
         filmRepository.saveAll(films.keySet());
     }
+
+
 }
