@@ -23,6 +23,9 @@ public class Cliente {
     @Column(name = "Cognome", nullable = false, length = -1)
     private String cognome;
     @Basic
+    @Column(name = "Username", nullable = false)
+    private String username;
+    @Basic
     @Column(name = "Email", nullable = false, length = -1)
     private String email;
     @Basic

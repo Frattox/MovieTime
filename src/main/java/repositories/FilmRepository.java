@@ -12,6 +12,8 @@ public interface FilmRepository extends JpaRepository<Film, Integer> {
 
     boolean existsByIdFilm(Film film);
 
+    Film findByTitoloAndFormato(String titolo, String formato);
+
 
 
 

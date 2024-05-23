@@ -4,12 +4,14 @@ package services;
 //La classe servirà per gestire le operazioni per il carrello
 
 import entities.Carrello;
+import entities.Cliente;
 import entities.DettaglioCarrello;
 import entities.Film;
 import jakarta.persistence.EntityManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import repositories.ClienteRepository;
 import repositories.DettaglioCarrelloRepository;
 import repositories.FilmRepository;
 import resources.exceptions.FilmWornOutException;
@@ -22,6 +24,9 @@ import java.util.List;
 public class CartService {
 
     @Autowired
+    private ClienteRepository clienteRepository;
+
+    @Autowired
     private DettaglioCarrelloRepository dettaglioCarrelloRepository;
 
     @Autowired
@@ -30,30 +35,23 @@ public class CartService {
     @Autowired
     private EntityManager entityManager;
 
-
-    //aggiunta dalla lista dei prodotti
     @Transactional
-    public void addInCart(Carrello carrello, Film film, int quantity)
-            throws FilmWornOutException, InvalidParameterException
+    public void addInCart(String email, String titolo, String formato, int quantity)
+            throws FilmWornOutException
     {
         //verifica che la quantità sia positiva
         if(quantity <= 0) throw new InvalidParameterException();
 
-        //così non ho problemi di dati incongruenti nel DB, dopo aver controllato che il film
-        //sia presente nel DB
-        if(filmRepository.existsByIdFilm(film))
-            entityManager.refresh(film);
-        else
-            throw new InvalidParameterException();
-
-        //controllo della versione (è giusto?)
-//        long version = film.getVersione();
-//        if(version != lastVersion(film))
-//            entityManager.refresh(film);
+        //prendo il film dalla repository
+        Film film = filmRepository.findByTitoloAndFormato(titolo, formato);
 
         //verifica della disponibilità del film
         int filmDisponibility = film.getQuantita();
         if(filmDisponibility - quantity < 0) throw new FilmWornOutException();
+
+        //reperisco il carrello associato al cliente
+        Cliente cliente = clienteRepository.findByEmail(email);
+        Carrello carrello = cliente.getCarrello();
 
         //aggiunta del film al carrello
         //Caso 1. controllo se il film era già presente nel carrello, in tal caso aumento la sua quantità
@@ -83,6 +81,7 @@ public class CartService {
         dettaglioCarrelloRepository.save(dettaglioInCart);
 
         //per quanto riguarda la modifica della disponibilità nel film, questo spetta al repository dell'ordine
+
     }
 
     //modifica della quantità presente nel dettaglio carrello
@@ -94,7 +93,7 @@ public class CartService {
 
         //così non ho problemi di dati incongruenti nel DB, dopo aver controllato che il film
         //sia presente nel DB
-        if(dettaglioCarrelloRepository.existsByIdDettaglioCarrelloAAndCarrello(dettaglioCarrello, carrello))
+        if(dettaglioCarrelloRepository.existsByIdDettaglioCarrelloAndCarrello(dettaglioCarrello, carrello))
             entityManager.refresh(dettaglioCarrello);
         else
             throw new InvalidParameterException();

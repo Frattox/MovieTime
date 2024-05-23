@@ -14,7 +14,7 @@ import java.util.List;
 public interface DettaglioCarrelloRepository extends JpaRepository<DettaglioCarrello,Integer> {
 
 
-    boolean existsByIdDettaglioCarrelloAAndCarrello(DettaglioCarrello dettaglioCarrello, Carrello carrello);
+    boolean existsByIdDettaglioCarrelloAndCarrello(DettaglioCarrello dettaglioCarrello, Carrello carrello);
 
     void deleteByIdDettaglioCarrello(DettaglioCarrello dettaglioCarrello);
 
@@ -22,6 +22,8 @@ public interface DettaglioCarrelloRepository extends JpaRepository<DettaglioCarr
     void deleteAllByFilm(List<Film> films,Carrello carrello);
 
     DettaglioCarrello findByFilmAndCarrello(Film film, Carrello carrello);
+
+    List<DettaglioCarrello> findAllByCarrello(Carrello carrello);
 
     @Query("SELECT d FROM DettaglioCarrello d WHERE d.film.titolo LIKE %:titolo% AND d.carrello = :carrello")
     List<DettaglioCarrello> findByTitleLike(@Param("titolo") String titolo, @Param("carrello") Carrello carrello);
