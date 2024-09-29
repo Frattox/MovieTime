@@ -1,13 +1,14 @@
 package entities;
 
 import jakarta.persistence.*;
-import lombok.*;
-
-import java.math.BigInteger;
-import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 //@Data specifica setter, getter, toString, equals e hashCode
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Film {
     @GeneratedValue(strategy = GenerationType.IDENTITY)

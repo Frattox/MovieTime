@@ -53,7 +53,6 @@ public class CartService {
             throw new FilmNotFoundException();
         Film film = optionalFilm.get();
 
-
         //verifica della disponibilità del film
         int filmDisponibility = film.getQuantita();
         if(filmDisponibility - quantity < 0) throw new FilmWornOutException();
