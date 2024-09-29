@@ -14,36 +14,45 @@ import org.springframework.stereotype.Service;
 import repositories.ClienteRepository;
 import repositories.DettaglioCarrelloRepository;
 import repositories.FilmRepository;
+import resources.exceptions.FilmNotFoundException;
 import resources.exceptions.FilmWornOutException;
 
 import java.security.InvalidParameterException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CartService {
-
-    @Autowired
+    //invece di usare @autowired che è deprecato
     private ClienteRepository clienteRepository;
-
-    @Autowired
     private DettaglioCarrelloRepository dettaglioCarrelloRepository;
-
-    @Autowired
     private FilmRepository filmRepository;
-
-    @Autowired
     private EntityManager entityManager;
+    public CartService(ClienteRepository clienteRepository,
+                       DettaglioCarrelloRepository dettaglioCarrelloRepository,
+                       FilmRepository filmRepository,
+                       EntityManager entityManager) {
+        this.clienteRepository = clienteRepository;
+        this.dettaglioCarrelloRepository = dettaglioCarrelloRepository;
+        this.filmRepository = filmRepository;
+        this.entityManager = entityManager;
+    }
+
 
     @Transactional
     public void addInCart(String email, String titolo, String formato, int quantity)
-            throws FilmWornOutException
-    {
+            throws FilmWornOutException, FilmNotFoundException {
         //verifica che la quantità sia positiva
         if(quantity <= 0) throw new InvalidParameterException();
 
         //prendo il film dalla repository
-        Film film = filmRepository.findByTitoloAndFormato(titolo, formato);
+        Optional<Film> optionalFilm = filmRepository.findByTitoloAndFormato(titolo, formato);
+
+        if(optionalFilm.isEmpty())
+            throw new FilmNotFoundException();
+        Film film = optionalFilm.get();
+
 
         //verifica della disponibilità del film
         int filmDisponibility = film.getQuantita();

@@ -47,4 +47,3 @@ public interface DettaglioCarrelloRepository extends JpaRepository<DettaglioCarr
     List<DettaglioCarrello> findAllByOrderByQuantitaDesc(@Param("carrello") Carrello carrello);
 
 }
-//print(''suca'')
