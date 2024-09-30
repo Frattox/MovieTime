@@ -16,6 +16,7 @@ import repositories.DettaglioCarrelloRepository;
 import repositories.FilmRepository;
 import resources.exceptions.FilmNotFoundException;
 import resources.exceptions.FilmWornOutException;
+import util.Utils;
 
 import java.security.InvalidParameterException;
 import java.util.LinkedList;
@@ -46,6 +47,7 @@ public class CartService {
         //verifica che la quantità sia positiva
         if(quantity <= 0) throw new InvalidParameterException();
 
+        //TODO: da modificare, preferisco solo con l'id, probabilmente più versatile
         //prendo il film dalla repository
         Optional<Film> optionalFilm = filmRepository.findByTitoloAndFormato(titolo, formato);
 
@@ -54,8 +56,8 @@ public class CartService {
         Film film = optionalFilm.get();
 
         //verifica della disponibilità del film
+        if(!Utils.isQuantityOk(film,quantity))throw new FilmWornOutException();
         int filmDisponibility = film.getQuantita();
-        if(filmDisponibility - quantity < 0) throw new FilmWornOutException();
 
         //reperisco il carrello associato al cliente
         Cliente cliente = clienteRepository.findByEmail(email);
