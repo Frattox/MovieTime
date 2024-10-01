@@ -4,6 +4,7 @@ import dto.FilmDTO;
 import entities.Film;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.validation.constraints.Min;
 import mapper.FilmMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,9 +24,6 @@ import java.util.stream.Collectors;
 @Service
 public class FilmService {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     private final FilmRepository filmRepository;
 
     public FilmService(FilmRepository filmRepository){
@@ -44,11 +42,11 @@ public class FilmService {
 
     //per ritornare il film selezionato, magari per ottenere dettagli
     @Transactional(readOnly = true)
-    public FilmDTO getFilm(int id){
-        if(id<0)
-            throw new IllegalArgumentException("Id film non idoneo");
-        Optional<Film> optionalFilm = filmRepository.findByIdFilm(id);
-        return optionalFilm.map(FilmMapper::toDTO).orElse(null);
+    public FilmDTO getFilm(int id) throws FilmNotFoundException {
+        Optional<Film> optionalFilm = filmRepository.findById(id);
+        return optionalFilm
+                .map(FilmMapper::toDTO)
+                .orElseThrow(FilmNotFoundException::new);
     }
 
     //per la ricerca di film
@@ -64,13 +62,13 @@ public class FilmService {
     //metodo per il decremento di q pezzi acquistati
     @Transactional(readOnly = false)
     public void decrQuantity(int id, int q) throws FilmWornOutException, FilmNotFoundException {
-        Optional<Film> optionalFilm = filmRepository.findByIdFilm(id);
-        if(optionalFilm.isEmpty()) throw new FilmNotFoundException();
-        Film film = optionalFilm.get();
+        Film film = filmRepository.findByIdWithLock(id).orElseThrow(FilmNotFoundException::new);
         if(!Utils.isQuantityOk(film,q)) throw new FilmWornOutException();
         film.setQuantita(film.getQuantita()-q);
-        entityManager.merge(film);
+        filmRepository.save(film);
     }
+
+
 
 
 }

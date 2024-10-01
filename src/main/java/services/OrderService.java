@@ -18,11 +18,13 @@ import java.util.Map;
 @Service
 public class OrderService {
 
-    @Autowired
     private DettaglioOrdineRepository dettaglioOrdineRepository;
-
-    @Autowired
     private FilmRepository filmRepository;
+
+    public OrderService(DettaglioOrdineRepository dettaglioOrdineRepository, FilmRepository filmRepository) {
+        this.dettaglioOrdineRepository = dettaglioOrdineRepository;
+        this.filmRepository = filmRepository;
+    }
 
     //Il momento in cui il cliente effettua l'acquisto dal carrello
     @Transactional

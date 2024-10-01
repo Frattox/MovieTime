@@ -1,5 +1,6 @@
 package repositories;
 
+import dto.FilmDTO;
 import entities.Film;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
@@ -25,7 +26,8 @@ public interface FilmRepository extends JpaRepository<Film, Integer> {
     Page<Film> findAllByTitolo(@Param("titolo") String titolo, Pageable pageable);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Film> findByIdFilm(int id);
+    @Query("SELECT f FROM Film f WHERE f.idFilm = :id")
+    Optional<Film> findByIdWithLock(@Param("id") int id);
 
 
 }
