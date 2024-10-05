@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DettaglioCarrelloDTO {
 
+    @Min(1)
     private int idDettaglioCarrello;
 
     @Min(value = 1, message = "La quantità deve essere almeno 1")
@@ -18,6 +19,9 @@ public class DettaglioCarrelloDTO {
 
     @DecimalMin(value = "0.01", message = "Il prezzo unitario deve essere maggiore di 0")
     private float prezzoUnita;
+
+    @Min(value = 1, message = "L'ID del carrello deve essere valido")
+    private int carrelloId;
 
     @Min(value = 1, message = "L'ID del film deve essere valido")
     private int filmId;

@@ -3,13 +3,15 @@ package services;
 
 //La classe servirà per gestire le operazioni per il carrello
 
+import dto.DettaglioCarrelloDTO;
 import entities.Carrello;
 import entities.Cliente;
 import entities.DettaglioCarrello;
 import entities.Film;
 import jakarta.persistence.EntityManager;
+import mapper.DettaglioCarrelloMapper;
+import mapper.FilmMapper;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repositories.ClienteRepository;
 import repositories.DettaglioCarrelloRepository;
@@ -18,22 +20,21 @@ import resources.exceptions.FilmNotFoundException;
 import resources.exceptions.FilmWornOutException;
 import util.Utils;
 
+import javax.swing.text.html.Option;
 import java.security.InvalidParameterException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class CartService {
-    //invece di usare @autowired che è deprecato
+public class CarrelloService {
     private ClienteRepository clienteRepository;
     private DettaglioCarrelloRepository dettaglioCarrelloRepository;
     private FilmRepository filmRepository;
     private EntityManager entityManager;
-    public CartService(ClienteRepository clienteRepository,
-                       DettaglioCarrelloRepository dettaglioCarrelloRepository,
-                       FilmRepository filmRepository,
-                       EntityManager entityManager) {
+    public CarrelloService(ClienteRepository clienteRepository,
+                           DettaglioCarrelloRepository dettaglioCarrelloRepository,
+                           FilmRepository filmRepository,
+                           EntityManager entityManager) {
         this.clienteRepository = clienteRepository;
         this.dettaglioCarrelloRepository = dettaglioCarrelloRepository;
         this.filmRepository = filmRepository;
@@ -42,7 +43,7 @@ public class CartService {
 
 
     @Transactional
-    public void addInCart(String email, String titolo, String formato, int quantity)
+    public void aggiungiAlCarrello(String email, String titolo, String formato, int quantity)
             throws FilmWornOutException, FilmNotFoundException {
         //verifica che la quantità sia positiva
         if(quantity <= 0) throw new InvalidParameterException();
@@ -96,7 +97,7 @@ public class CartService {
 
     //modifica della quantità presente nel dettaglio carrello
     @Transactional
-    public void updateInCart(Carrello carrello, DettaglioCarrello dettaglioCarrello, int quantity)
+    public void aggiornaIlCarrello(Carrello carrello, DettaglioCarrello dettaglioCarrello, int quantity)
     {
         //verifica che la quantità sia positiva e che il film sia disponibile rispetto alla quantità fornita
         if(quantity <= 0 || dettaglioCarrello.getFilm().getIdFilm() - quantity < 0) throw new InvalidParameterException();
@@ -112,36 +113,36 @@ public class CartService {
         dettaglioCarrelloRepository.save(dettaglioCarrello);
     }
 
+
     //quando si clicca sul singolo dettaglio carrello
     @Transactional
-    public void removeDettaglioCarrello(Film film, Carrello carrello)
+    public void rimuoviDettaglioCarrello(int idDettaglioCarrello, int idCarrello)
     {
-        DettaglioCarrello rem = dettaglioCarrelloRepository.findByFilmAndCarrello(film,carrello);
-        if(rem!=null)
-            dettaglioCarrelloRepository.deleteByIdDettaglioCarrello(rem);
+        Optional<DettaglioCarrello> optionalDettaglioCarrello = dettaglioCarrelloRepository.findByIdDettaglioCarrelloAndCarrello(idDettaglioCarrello,idCarrello);
+        optionalDettaglioCarrello.ifPresent(dettaglioCarrello -> dettaglioCarrelloRepository.deleteById(dettaglioCarrello.getIdDettaglioCarrello()));
     }
 
+    //todo: gestire i dto
     //selezioni più di un film da eliminare
     @Transactional
-    public void removeDettagliCarrello(List<Film> films, Carrello carrello){dettaglioCarrelloRepository.deleteAllByFilm(films, carrello);}
+    public void rimuoviDettagliCarrello(List<DettaglioCarrello> dettagliCarrello, Carrello carrello){dettaglioCarrelloRepository.deleteAllByDettagliCarrello(dettagliCarrello);}
 
     @Transactional(readOnly = true)
-    public List<DettaglioCarrello> getAllDettagliCarrello(){return dettaglioCarrelloRepository.findAll();}
+    public List<DettaglioCarrelloDTO> getAllDettagliCarrello(){return DettaglioCarrelloMapper.toDTOList(dettaglioCarrelloRepository.findAll());}
 
     //quando si clicca sul singolo dettaglio carrello
     @Transactional(readOnly = true)
-    public DettaglioCarrello getSingleDettaglioCarrello(Film film, Carrello carrello)
-    {
-        DettaglioCarrello ret = dettaglioCarrelloRepository.findByFilmAndCarrello(film,carrello);
-        if(ret==null)
-            throw new InvalidParameterException();
-        return ret;
+    public DettaglioCarrelloDTO getSingleDettaglioCarrello(int id) throws FilmNotFoundException {
+        Optional<DettaglioCarrello> optionalDettaglioCarrello = dettaglioCarrelloRepository.findById(id);
+        return optionalDettaglioCarrello
+                .map(DettaglioCarrelloMapper::toDTO)
+                .orElseThrow(FilmNotFoundException::new);
     }
 
 
     //quando si cerca il titolo (anche incompleto)
     @Transactional(readOnly = true)
-    public List<DettaglioCarrello> getSingleDettaglioCarrello(String titolo, Carrello carrello){return dettaglioCarrelloRepository.findByTitleLike(titolo, carrello);}
+    public List<DettaglioCarrello> searchDettaglioCarrello(String titolo, Carrello carrello){return dettaglioCarrelloRepository.findByTitleLike(titolo, carrello);}
 
     //tutti i dettagli carrello ordinati in senso DECRESCENTE per titolo
     @Transactional(readOnly = true)

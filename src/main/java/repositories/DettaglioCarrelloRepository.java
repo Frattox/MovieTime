@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DettaglioCarrelloRepository extends JpaRepository<DettaglioCarrello,Integer> {
@@ -18,10 +19,13 @@ public interface DettaglioCarrelloRepository extends JpaRepository<DettaglioCarr
 
     void deleteByIdDettaglioCarrello(DettaglioCarrello dettaglioCarrello);
 
-    @Query("DELETE FROM DettaglioCarrello d WHERE d.film IN ?1 AND d.carrello=?2")
-    void deleteAllByFilm(List<Film> films,Carrello carrello);
+    @Query("DELETE FROM DettaglioCarrello d WHERE d IN ?1")
+    void deleteAllByDettagliCarrello(List<DettaglioCarrello> dettagliCarrello);
+
 
     DettaglioCarrello findByFilmAndCarrello(Film film, Carrello carrello);
+
+    Optional<DettaglioCarrello> findByIdDettaglioCarrelloAndCarrello(int idDettaglioCarrello, int idCarrello);
 
     List<DettaglioCarrello> findAllByCarrello(Carrello carrello);
 

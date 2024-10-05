@@ -1,15 +1,12 @@
 package services;
 
-import dto.ClienteDTO;
 import entities.*;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repositories.DettaglioOrdineRepository;
 import repositories.FilmRepository;
 import resources.exceptions.FilmWornOutException;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -17,12 +14,12 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class OrderService {
+public class OrdineService {
 
     private DettaglioOrdineRepository dettaglioOrdineRepository;
     private FilmRepository filmRepository;
 
-    public OrderService(DettaglioOrdineRepository dettaglioOrdineRepository, FilmRepository filmRepository) {
+    public OrdineService(DettaglioOrdineRepository dettaglioOrdineRepository, FilmRepository filmRepository) {
         this.dettaglioOrdineRepository = dettaglioOrdineRepository;
         this.filmRepository = filmRepository;
     }

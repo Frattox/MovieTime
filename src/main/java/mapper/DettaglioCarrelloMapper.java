@@ -4,6 +4,9 @@ import dto.DettaglioCarrelloDTO;
 import entities.Carrello;
 import entities.DettaglioCarrello;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class DettaglioCarrelloMapper {
 
     public static DettaglioCarrello toDettaglioCarrello(DettaglioCarrelloDTO dto) {
@@ -32,7 +35,17 @@ public class DettaglioCarrelloMapper {
                 dettaglioCarrello.getIdDettaglioCarrello(),
                 dettaglioCarrello.getQuantita(),
                 dettaglioCarrello.getPrezzoUnita(),
+                dettaglioCarrello.getCarrello() != null ? dettaglioCarrello.getCarrello().getIdCarrello():0, // Recupera l'ID del film se esiste
                 dettaglioCarrello.getFilm() != null ? dettaglioCarrello.getFilm().getIdFilm() : 0 // Recupera l'ID del film se esiste
         );
+    }
+
+    public static List<DettaglioCarrelloDTO> toDTOList(List<DettaglioCarrello> dettagliCarrello) {
+        if (dettagliCarrello == null) {
+            return null;
+        }
+        return dettagliCarrello.stream()
+                .map(DettaglioCarrelloMapper::toDTO) // Usa il metodo toDTO per convertire ogni dettaglioCarrello
+                .collect(Collectors.toList());
     }
 }
