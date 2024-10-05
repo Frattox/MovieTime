@@ -1,7 +1,9 @@
 package entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
@@ -10,6 +12,8 @@ import java.util.Objects;
 
 //@Data specifica setter, getter, toString, equals e hashCode
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class Ordine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -9,7 +9,6 @@ public class FilmMapper {
         if (filmDTO == null) {
             return null;
         }
-
         return new Film(
                 filmDTO.getIdFilm(),
                 filmDTO.getTitolo(),

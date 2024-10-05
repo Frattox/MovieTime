@@ -13,7 +13,7 @@ public class AccountingService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    //La registrazione del cliente si farà successivamente
+    //La registrazione del cliente si farà successivamente con keycloak
 
     //@Transactional(readOnly = true)
     public List<Cliente> getAllClienti(){return clienteRepository.findAll();}

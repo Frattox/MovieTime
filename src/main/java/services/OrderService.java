@@ -1,5 +1,6 @@
 package services;
 
+import dto.ClienteDTO;
 import entities.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

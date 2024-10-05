@@ -9,6 +9,8 @@ import java.util.Objects;
 //@Data specifica setter, getter, toString, equals e hashCode
 @Data
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public class DettaglioCarrello {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

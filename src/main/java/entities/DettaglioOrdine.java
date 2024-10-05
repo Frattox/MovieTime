@@ -8,6 +8,8 @@ import java.util.Objects;
 
 //@Data specifica setter, getter, toString, equals e hashCode
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class DettaglioOrdine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
