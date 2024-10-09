@@ -1,4 +1,4 @@
-package repositories;
+package resources.exceptions;
 
 public class OrdineNotFoundException extends Exception{
 }

@@ -17,9 +17,6 @@ import java.util.Optional;
 @Repository
 public interface FilmRepository extends JpaRepository<Film, Integer> {
 
-
-    boolean existsByIdFilm(Film film);
-
     Optional<Film> findByTitoloAndFormato(String titolo, String formato);
 
     @Query("SELECT f FROM Film f WHERE f.titolo LIKE %:titolo%")

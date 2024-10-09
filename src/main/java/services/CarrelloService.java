@@ -11,6 +11,7 @@ import jakarta.persistence.EntityManager;
 import mapper.DettaglioCarrelloMapper;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
+import repositories.CarrelloRepository;
 import repositories.ClienteRepository;
 import repositories.DettaglioCarrelloRepository;
 import repositories.FilmRepository;
@@ -26,18 +27,18 @@ import java.util.Optional;
 
 @Service
 public class CarrelloService {
-    private ClienteRepository clienteRepository;
-    private DettaglioCarrelloRepository dettaglioCarrelloRepository;
-    private FilmRepository filmRepository;
-    private EntityManager entityManager;
+    private final ClienteRepository clienteRepository;
+    private final DettaglioCarrelloRepository dettaglioCarrelloRepository;
+    private final FilmRepository filmRepository;
+    private final CarrelloRepository carrelloRepository;
     public CarrelloService(ClienteRepository clienteRepository,
                            DettaglioCarrelloRepository dettaglioCarrelloRepository,
                            FilmRepository filmRepository,
-                           EntityManager entityManager) {
+                           CarrelloRepository carrelloRepository) {
         this.clienteRepository = clienteRepository;
         this.dettaglioCarrelloRepository = dettaglioCarrelloRepository;
         this.filmRepository = filmRepository;
-        this.entityManager = entityManager;
+        this.carrelloRepository = carrelloRepository;
     }
 
 
@@ -110,7 +111,7 @@ public class CarrelloService {
     @Transactional
     public void rimuoviDettaglioCarrello(int idDettaglioCarrello, int idCarrello)
     {
-        Optional<DettaglioCarrello> optionalDettaglioCarrello = dettaglioCarrelloRepository.findByIdDettaglioCarrelloAndCarrello(idDettaglioCarrello,idCarrello);
+        Optional<DettaglioCarrello> optionalDettaglioCarrello = dettaglioCarrelloRepository.findByIdDettaglioCarrelloAndCarrello(idDettaglioCarrello,carrelloRepository.findById(idCarrello).orElseThrow());
         optionalDettaglioCarrello.ifPresent(dettaglioCarrello -> dettaglioCarrelloRepository.deleteById(dettaglioCarrello.getIdDettaglioCarrello()));
     }
 

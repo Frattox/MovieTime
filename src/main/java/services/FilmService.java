@@ -59,15 +59,6 @@ public class FilmService {
         return page.getContent().stream().map(FilmMapper::toDTO).collect(Collectors.toList());
     }
 
-    //metodo per il decremento di q pezzi acquistati
-    @Transactional
-    public void decrQuantity(int id, int q) throws FilmWornOutException, FilmNotFoundException {
-        Film film = filmRepository.findByIdWithLock(id).orElseThrow(FilmNotFoundException::new);
-        if(!Utils.isQuantityOk(film,q)) throw new FilmWornOutException();
-        film.setQuantita(film.getQuantita()-q);
-        filmRepository.save(film);
-    }
-
     //TODO: liste in ordine crescente, decrescente ecc.
 
 

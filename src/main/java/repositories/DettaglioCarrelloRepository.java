@@ -3,7 +3,9 @@ package repositories;
 import entities.Carrello;
 import entities.DettaglioCarrello;
 import entities.Film;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -14,20 +16,16 @@ import java.util.Optional;
 @Repository
 public interface DettaglioCarrelloRepository extends JpaRepository<DettaglioCarrello,Integer> {
 
-
-    boolean existsByIdDettaglioCarrelloAndCarrello(DettaglioCarrello dettaglioCarrello, Carrello carrello);
-
-    void deleteByIdDettaglioCarrello(DettaglioCarrello dettaglioCarrello);
-
     @Query("DELETE FROM DettaglioCarrello d WHERE d IN ?1")
     void deleteAllByDettagliCarrello(List<DettaglioCarrello> dettagliCarrello);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT d FROM DettaglioCarrello d WHERE d.idDettaglioCarrello = :id AND d.carrello.carrelloCliente.idCliente = :idCliente")
+    Optional<DettaglioCarrello> findByIdAndClienteWithLock(@Param("id") int idDettaglioCarrello, @Param("idCliente") int idCliente);
 
     Optional<DettaglioCarrello> findByFilmAndCarrello(Film film, Carrello carrello);
 
-    Optional<DettaglioCarrello> findByIdDettaglioCarrelloAndCarrello(int idDettaglioCarrello, int idCarrello);
-
-    List<DettaglioCarrello> findAllByCarrello(Carrello carrello);
+    Optional<DettaglioCarrello> findByIdDettaglioCarrelloAndCarrello(int idDettaglioCarrello, Carrello carrello);
 
     @Query("SELECT d FROM DettaglioCarrello d WHERE d.film.titolo LIKE %:titolo% AND d.carrello = :carrello")
     List<DettaglioCarrello> findByTitleLike(@Param("titolo") String titolo, @Param("carrello") Carrello carrello);

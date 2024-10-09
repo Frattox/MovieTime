@@ -9,7 +9,6 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Objects;
 
-//@Data specifica setter, getter, toString, equals e hashCode
 @Data
 @Entity
 @EntityListeners(AuditingEntityListener.class)//todo: da guardare meglio (by dome)
@@ -50,5 +49,4 @@ public class Cliente {
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<MetodoPagamento> metodiPagamento;
-
 }
