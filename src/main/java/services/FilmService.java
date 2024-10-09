@@ -33,7 +33,7 @@ public class FilmService {
     //per i prodotti principali presenti in home
     @Transactional(readOnly = true)
     public List<FilmDTO> getAllFilms(int pageNumber){
-        Pageable pageable = PageRequest.of(pageNumber,30);
+        Pageable pageable = PageRequest.of(pageNumber,20);
         Page<Film> page = filmRepository.findAll(pageable);
         if(page.isEmpty())
             return new ArrayList<>();
@@ -52,7 +52,7 @@ public class FilmService {
     //per la ricerca di film
     @Transactional(readOnly = true)
     public List<FilmDTO> getAllFilmsLike(String titolo, int pageNumber){
-        Pageable pageable = PageRequest.of(pageNumber,30);
+        Pageable pageable = PageRequest.of(pageNumber,20);
         Page<Film> page = filmRepository.findAllByTitolo(titolo, pageable);
         if(page.isEmpty())
             return new ArrayList<>();
@@ -60,13 +60,17 @@ public class FilmService {
     }
 
     //metodo per il decremento di q pezzi acquistati
-    @Transactional(readOnly = false)
+    @Transactional
     public void decrQuantity(int id, int q) throws FilmWornOutException, FilmNotFoundException {
         Film film = filmRepository.findByIdWithLock(id).orElseThrow(FilmNotFoundException::new);
         if(!Utils.isQuantityOk(film,q)) throw new FilmWornOutException();
         film.setQuantita(film.getQuantita()-q);
         filmRepository.save(film);
     }
+
+    //TODO: liste in ordine crescente, decrescente ecc.
+
+
 
 
 

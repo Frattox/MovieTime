@@ -1,12 +1,10 @@
 package mapper;
 
+import dto.DettaglioCarrelloDTO;
 import dto.DettaglioOrdineDTO;
 import dto.OrdineDTO;
-import entities.Ordine;
-import entities.Cliente;
-import entities.Carrello;
-import entities.MetodoPagamento;
-import entities.DettaglioOrdine;
+import entities.*;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -37,16 +35,34 @@ public class OrdineMapper {
 
         List<DettaglioOrdineDTO> dettagliOrdiniDTO = ordine.getDettagliOrdini().stream()
                 .map(DettaglioOrdineMapper::toDTO)
-                .collect(Collectors.toList());
+                .toList();
 
         return new OrdineDTO(
                 ordine.getIdOrdine(),
                 ordine.getDataOrdine(),
                 ordine.getStato(),
                 ordine.getIndirizzo(),
-                ordine.getOrdineCliente() != null ? ordine.getOrdineCliente().getIdCliente() : 0,
-                ordine.getOrdineCarrello() != null ? ordine.getOrdineCarrello().getIdCarrello() : 0,
+                ordine.getCliente() != null ? ordine.getCliente().getIdCliente() : 0,
+                ordine.getCarrello() != null ? ordine.getCarrello().getIdCarrello() : 0,
                 ordine.getMetodoPagamento() != null ? ordine.getMetodoPagamento().getIdMetodoPagamento() : 0
         );
+    }
+
+    public static List<OrdineDTO> toDTOList(List<Ordine> ordine) {
+        if (ordine == null) {
+            return null;
+        }
+        return ordine.stream()
+                .map(OrdineMapper::toDTO) // Usa il metodo toDTO per convertire ogni dettaglioCarrello
+                .collect(Collectors.toList());
+    }
+
+    public static List<Ordine> toOrdineList(List<OrdineDTO> ordineDTO) {
+        if (ordineDTO == null) {
+            return null;
+        }
+        return ordineDTO.stream()
+                .map(OrdineMapper::toOrdine) // Usa il metodo toDettaglioCarrello per convertire ogni DTO
+                .collect(Collectors.toList());
     }
 }

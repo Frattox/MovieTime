@@ -121,7 +121,6 @@ public class CarrelloService {
     @Transactional(readOnly = true)
     public List<DettaglioCarrelloDTO> getAllDettagliCarrello(){return DettaglioCarrelloMapper.toDTOList(dettaglioCarrelloRepository.findAll());}
 
-    //todo: gestire i dto
     //quando si clicca sul singolo dettaglio carrello
     @Transactional(readOnly = true)
     public DettaglioCarrelloDTO getSingleDettaglioCarrello(int id) throws FilmNotFoundException {

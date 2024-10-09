@@ -34,11 +34,11 @@ public class Ordine {
     //RELAZIONI
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ID_cliente", nullable = false)
-    private Cliente ordineCliente;
+    private Cliente cliente;
 
     @OneToOne
     @JoinColumn(name = "ID_carrello", nullable = false)
-    private Carrello ordineCarrello;
+    private Carrello carrello;
 
     @ManyToOne
     @JoinColumn(name = "ID_metodo_pagamento", nullable = false)

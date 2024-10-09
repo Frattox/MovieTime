@@ -1,44 +1,60 @@
 package services;
 
+import dto.DettaglioOrdineDTO;
+import dto.MetodoPagamentoDTO;
+import dto.OrdineDTO;
 import entities.*;
-import jakarta.transaction.Transactional;
+import mapper.DettaglioOrdineMapper;
+import mapper.MetodoPagamentoMapper;
+import mapper.OrdineMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import repositories.DettaglioOrdineRepository;
-import repositories.FilmRepository;
+import org.springframework.transaction.annotation.Transactional;
+import repositories.*;
+import resources.exceptions.ClienteNotFoundException;
+import resources.exceptions.DettaglioOrdineNotFoundException;
 import resources.exceptions.FilmWornOutException;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrdineService {
 
-    private DettaglioOrdineRepository dettaglioOrdineRepository;
-    private FilmRepository filmRepository;
+    private final OrdineRepository ordineRepository;
+    private final DettaglioOrdineRepository dettaglioOrdineRepository;
+    private final FilmRepository filmRepository;
+    private final ClienteRepository clienteRepository;
 
-    public OrdineService(DettaglioOrdineRepository dettaglioOrdineRepository, FilmRepository filmRepository) {
+    public OrdineService(OrdineRepository ordineRepository, DettaglioOrdineRepository dettaglioOrdineRepository, FilmRepository filmRepository, ClienteRepository clienteRepository) {
+        this.ordineRepository = ordineRepository;
         this.dettaglioOrdineRepository = dettaglioOrdineRepository;
         this.filmRepository = filmRepository;
+        this.clienteRepository = clienteRepository;
     }
 
     //Il momento in cui il cliente effettua l'acquisto dal carrello
     @Transactional
-    public void purchaseFromCart(Cliente cliente, String indirizzo, MetodoPagamento metodoPagamento)
-            throws FilmWornOutException
-    {
+    public void acquistaDalCarrello(int idCliente, String indirizzo, MetodoPagamentoDTO metodoPagamentoDTO)
+            throws FilmWornOutException, ClienteNotFoundException {
+        Optional<Cliente> clienteOptional = clienteRepository.findById(idCliente);
+        Cliente cliente = clienteOptional.orElseThrow(ClienteNotFoundException::new);
         Carrello carrello = cliente.getCarrello();
         Ordine ordine = new Ordine();
-        ordine.setOrdineCliente(cliente);
-        ordine.setMetodoPagamento(metodoPagamento);
-        ordine.setOrdineCarrello(carrello);
+        ordine.setCliente(cliente);
+        ordine.setMetodoPagamento(MetodoPagamentoMapper.toMetodoPagamento(metodoPagamentoDTO));
+        ordine.setCarrello(carrello);
         ordine.setIndirizzo(indirizzo);
         ordine.setStato("Preparazione");
         ordine.setDataOrdine(LocalDateTime.now());
 
+        aggiornaOrdine(ordine,carrello);
+    }
 
+    private void aggiornaOrdine(Ordine ordine, Carrello carrello) throws FilmWornOutException {
         List<DettaglioCarrello> dettagliCarrello = carrello.getDettagliCarrello();
         List<DettaglioOrdine> dettagliOrdine = new LinkedList<>();
         Map<Film,Integer> films = new HashMap<>();
@@ -50,9 +66,8 @@ public class OrdineService {
 
             //verifico prima che esiste la disponibilità
             Film film = dettaglioCarrello.getFilm();
-            int quantity = dettaglioCarrello.getQuantita();
-            int newQuantity = film.getQuantita() - quantity;
-            if(newQuantity <= 0) throw new FilmWornOutException();
+            int newQuantity = film.getQuantita() - dettaglioCarrello.getQuantita();
+            if(newQuantity<=0) throw new FilmWornOutException();
 
             films.put(film,newQuantity);
 
@@ -76,9 +91,59 @@ public class OrdineService {
             int newQuantity = films.get(f);
             f.setQuantita(newQuantity);
         }
-
         filmRepository.saveAll(films.keySet());
+
     }
 
+    @Transactional(readOnly = true)
+    public List<OrdineDTO> getAllOrdini(int pageNumber){
+        Pageable pageable = PageRequest.of(pageNumber,20);
+        Page<Ordine> page = ordineRepository.findAll(pageable);
+        if(page.isEmpty())
+            return new ArrayList<>();
+        return page.getContent()
+                .stream()
+                .map(OrdineMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 
+    //Dalla lista di ordini effettuati, si clicca uno in particolare
+    @Transactional(readOnly = true)
+    public OrdineDTO getSingleOrdine(int idOrdine) throws OrdineNotFoundException {
+        return OrdineMapper.toDTO(
+                ordineRepository
+                        .findById(idOrdine)
+                        .orElseThrow(OrdineNotFoundException::new)
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrdineDTO> getOrdiniOrderedByDataAsc(int idCliente, int pageNumber){
+        Page<Ordine> page = ordineRepository.findAllOrderByDataAsc(idCliente, PageRequest.of(pageNumber,20));
+        if(page.isEmpty())
+            return new ArrayList<>();
+        return OrdineMapper.toDTOList(page.getContent());
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrdineDTO> getOrdiniOrderedByDataDesc(int idCliente, int pageNumber){
+        Page<Ordine> page = ordineRepository.findAllOrderByDataDesc(idCliente, PageRequest.of(pageNumber,20));
+        if(page.isEmpty())
+            return new ArrayList<>();
+        return OrdineMapper.toDTOList(page.getContent());
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrdineDTO> getOrdiniBetween(int idCliente, LocalDateTime min, LocalDateTime max, int pageNumber) throws ClienteNotFoundException {
+        Page<Ordine> page = ordineRepository
+                .findByClienteAndDataOrdineBetween(
+                        clienteRepository.findById(idCliente).orElseThrow(ClienteNotFoundException::new)
+                        ,min
+                        ,max
+                        ,PageRequest.of(pageNumber,20)
+                );
+        if(page.isEmpty())
+            return new ArrayList<>();
+        return OrdineMapper.toDTOList(page.getContent());
+    }
 }
