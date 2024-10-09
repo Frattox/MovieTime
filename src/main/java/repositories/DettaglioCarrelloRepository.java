@@ -23,7 +23,7 @@ public interface DettaglioCarrelloRepository extends JpaRepository<DettaglioCarr
     void deleteAllByDettagliCarrello(List<DettaglioCarrello> dettagliCarrello);
 
 
-    DettaglioCarrello findByFilmAndCarrello(Film film, Carrello carrello);
+    Optional<DettaglioCarrello> findByFilmAndCarrello(Film film, Carrello carrello);
 
     Optional<DettaglioCarrello> findByIdDettaglioCarrelloAndCarrello(int idDettaglioCarrello, int idCarrello);
 

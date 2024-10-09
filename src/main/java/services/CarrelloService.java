@@ -5,22 +5,21 @@ package services;
 
 import dto.DettaglioCarrelloDTO;
 import entities.Carrello;
-import entities.Cliente;
 import entities.DettaglioCarrello;
 import entities.Film;
 import jakarta.persistence.EntityManager;
 import mapper.DettaglioCarrelloMapper;
-import mapper.FilmMapper;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 import repositories.ClienteRepository;
 import repositories.DettaglioCarrelloRepository;
 import repositories.FilmRepository;
+import resources.exceptions.ClienteNotFoundException;
+import resources.exceptions.DettaglioCarrelloNotFoundException;
 import resources.exceptions.FilmNotFoundException;
 import resources.exceptions.FilmWornOutException;
 import util.Utils;
 
-import javax.swing.text.html.Option;
 import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Optional;
@@ -43,76 +42,69 @@ public class CarrelloService {
 
 
     @Transactional
-    public void aggiungiAlCarrello(String email, String titolo, String formato, int quantity)
-            throws FilmWornOutException, FilmNotFoundException {
+    public void aggiungiAlCarrello(int idCliente, String titolo, String formato, int quantity)
+            throws FilmWornOutException, FilmNotFoundException, ClienteNotFoundException{
         //verifica che la quantità sia positiva
         if(quantity <= 0) throw new InvalidParameterException();
 
-        //TODO: da modificare, preferisco solo con l'id, probabilmente più versatile
         //prendo il film dalla repository
-        Optional<Film> optionalFilm = filmRepository.findByTitoloAndFormato(titolo, formato);
-
-        if(optionalFilm.isEmpty())
-            throw new FilmNotFoundException();
-        Film film = optionalFilm.get();
+        Film film = filmRepository.findByTitoloAndFormato(titolo, formato).orElseThrow(FilmNotFoundException::new);
 
         //verifica della disponibilità del film
         if(!Utils.isQuantityOk(film,quantity))throw new FilmWornOutException();
-        int filmDisponibility = film.getQuantita();
 
         //reperisco il carrello associato al cliente
-        Cliente cliente = clienteRepository.findByEmail(email);
-        Carrello carrello = cliente.getCarrello();
+        Carrello carrello = clienteRepository.findById(idCliente).orElseThrow(ClienteNotFoundException::new).getCarrello();
+
+        Optional<DettaglioCarrello> optionalDettaglioCarrello = dettaglioCarrelloRepository.findByFilmAndCarrello(film, carrello);
+
+        //in ogni caso, l'oggetto dettaglioInCart preso dalla tabella DettaglioCarrello, viene caricato/aggiornato con i dati modificati nel DB
+        dettaglioCarrelloRepository.save(getDettaglioCarrelloAggiornato(optionalDettaglioCarrello,film,carrello,quantity));
+    }
+
+    private DettaglioCarrello getDettaglioCarrelloAggiornato(Optional<DettaglioCarrello> optionalDettaglioCarrello, Film film, Carrello carrello, int quantity) throws FilmWornOutException {
+        DettaglioCarrello dettaglioCarrello;
+        int filmDisponibility = film.getQuantita();
 
         //aggiunta del film al carrello
         //Caso 1. controllo se il film era già presente nel carrello, in tal caso aumento la sua quantità
-        DettaglioCarrello dettaglioInCart = dettaglioCarrelloRepository.findByFilmAndCarrello(film, carrello);
-        if(dettaglioInCart!=null)
+        if(optionalDettaglioCarrello.isPresent())
         {
             //verifica della disponibilità del film, considerando la quantità già presente nel carrello
-            int previousQuantity = dettaglioInCart.getQuantita();
+            dettaglioCarrello = optionalDettaglioCarrello.get();
+            int previousQuantity = dettaglioCarrello.getQuantita();
             int newQuantity = previousQuantity+quantity;
             if(filmDisponibility - newQuantity < 0) throw new FilmWornOutException();
-            dettaglioInCart.setQuantita(newQuantity);
+            dettaglioCarrello.setQuantita(newQuantity);
         }
 
         //Caso 2. se il film non era già presente, allora bisogna aggiungerlo per la prima volta
         else
         {
-            dettaglioInCart = new DettaglioCarrello();
-            dettaglioInCart.setFilm(film);
-            dettaglioInCart.setQuantita(quantity);
-            dettaglioInCart.setCarrello(carrello);
+            dettaglioCarrello = new DettaglioCarrello();
+            dettaglioCarrello.setFilm(film);
+            dettaglioCarrello.setQuantita(quantity);
+            dettaglioCarrello.setCarrello(carrello);
             //DOMANDA: va gestito in caso di cambio di prezzo??? con la versione????
-            dettaglioInCart.setPrezzoUnita(film.getPrezzo());
+            dettaglioCarrello.setPrezzoUnita(film.getPrezzo());
         }
-
-        //in ogni caso, l'oggetto dettaglioInCart preso dalla tabella DettaglioCarrello, viene ricaricato con i
-        // dati modificati nel DB
-        dettaglioCarrelloRepository.save(dettaglioInCart);
-
-        //per quanto riguarda la modifica della disponibilità nel film, questo spetta al repository dell'ordine
-
+        return dettaglioCarrello;
     }
 
     //modifica della quantità presente nel dettaglio carrello
     @Transactional
-    public void aggiornaIlCarrello(Carrello carrello, DettaglioCarrello dettaglioCarrello, int quantity)
-    {
+    public void aggiornaIlCarrello(int idDettaglioCarrello, int quantity) throws DettaglioCarrelloNotFoundException, FilmNotFoundException, FilmWornOutException {
+        DettaglioCarrello dettaglioCarrello = dettaglioCarrelloRepository.findById(idDettaglioCarrello).orElseThrow(DettaglioCarrelloNotFoundException::new);
+        Film film = filmRepository.findById(dettaglioCarrello.getFilm().getIdFilm()).orElseThrow(FilmNotFoundException::new);
+
         //verifica che la quantità sia positiva e che il film sia disponibile rispetto alla quantità fornita
-        if(quantity <= 0 || dettaglioCarrello.getFilm().getIdFilm() - quantity < 0) throw new InvalidParameterException();
+        if(quantity <= 0) throw new InvalidParameterException();
+        if(!Utils.isQuantityOk(film,quantity)) throw new FilmWornOutException();
 
-        //così non ho problemi di dati incongruenti nel DB, dopo aver controllato che il film
-        //sia presente nel DB
-        if(dettaglioCarrelloRepository.existsByIdDettaglioCarrelloAndCarrello(dettaglioCarrello, carrello))
-            entityManager.refresh(dettaglioCarrello);
-        else
-            throw new InvalidParameterException();
-
+        //setting della nuova quantità
         dettaglioCarrello.setQuantita(quantity);
         dettaglioCarrelloRepository.save(dettaglioCarrello);
     }
-
 
     //quando si clicca sul singolo dettaglio carrello
     @Transactional
@@ -122,14 +114,14 @@ public class CarrelloService {
         optionalDettaglioCarrello.ifPresent(dettaglioCarrello -> dettaglioCarrelloRepository.deleteById(dettaglioCarrello.getIdDettaglioCarrello()));
     }
 
-    //todo: gestire i dto
     //selezioni più di un film da eliminare
     @Transactional
-    public void rimuoviDettagliCarrello(List<DettaglioCarrello> dettagliCarrello, Carrello carrello){dettaglioCarrelloRepository.deleteAllByDettagliCarrello(dettagliCarrello);}
+    public void rimuoviDettagliCarrello(List<DettaglioCarrelloDTO> dettagliCarrelloDTO, Carrello carrello){dettaglioCarrelloRepository.deleteAllByDettagliCarrello(DettaglioCarrelloMapper.toDettaglioCarrelloList(dettagliCarrelloDTO));}
 
     @Transactional(readOnly = true)
     public List<DettaglioCarrelloDTO> getAllDettagliCarrello(){return DettaglioCarrelloMapper.toDTOList(dettaglioCarrelloRepository.findAll());}
 
+    //todo: gestire i dto
     //quando si clicca sul singolo dettaglio carrello
     @Transactional(readOnly = true)
     public DettaglioCarrelloDTO getSingleDettaglioCarrello(int id) throws FilmNotFoundException {
@@ -142,31 +134,31 @@ public class CarrelloService {
 
     //quando si cerca il titolo (anche incompleto)
     @Transactional(readOnly = true)
-    public List<DettaglioCarrello> searchDettaglioCarrello(String titolo, Carrello carrello){return dettaglioCarrelloRepository.findByTitleLike(titolo, carrello);}
+    public List<DettaglioCarrelloDTO> searchDettaglioCarrello(String titolo, Carrello carrello){return DettaglioCarrelloMapper.toDTOList(dettaglioCarrelloRepository.findByTitleLike(titolo, carrello));}
 
     //tutti i dettagli carrello ordinati in senso DECRESCENTE per titolo
     @Transactional(readOnly = true)
-    public List<DettaglioCarrello> getDettagliCarrelloOrderedByTitoloDesc(Carrello carrello){return dettaglioCarrelloRepository.findAllOrderByTitoloDesc(carrello);}
+    public List<DettaglioCarrelloDTO> getDettagliCarrelloOrderedByTitoloDesc(Carrello carrello){return DettaglioCarrelloMapper.toDTOList(dettaglioCarrelloRepository.findAllOrderByTitoloDesc(carrello));}
 
     //tutti i dettagli carrello ordinati in senso CRESCENTE per titolo
     @Transactional(readOnly = true)
-    public List<DettaglioCarrello> getDettagliCarrelloOrderedByTitoloAsc(Carrello carrello){return dettaglioCarrelloRepository.findAllOrderByTitoloAsc(carrello);}
+    public List<DettaglioCarrelloDTO> getDettagliCarrelloOrderedByTitoloAsc(Carrello carrello){return DettaglioCarrelloMapper.toDTOList(dettaglioCarrelloRepository.findAllOrderByTitoloAsc(carrello));}
 
     //tutti i dettagli carrello ordinati in senso DECRESCENTE per prezzo
     @Transactional(readOnly = true)
-    public List<DettaglioCarrello> getDettagliCarrelloOrderedByPrezzoDesc(Carrello carrello){return dettaglioCarrelloRepository.findAllOrderByPrezzoDesc(carrello);}
+    public List<DettaglioCarrelloDTO> getDettagliCarrelloOrderedByPrezzoDesc(Carrello carrello){return DettaglioCarrelloMapper.toDTOList(dettaglioCarrelloRepository.findAllOrderByPrezzoDesc(carrello));}
 
     //tutti i dettagli carrello ordinati in senso CRESCENTE per prezzo
     @Transactional(readOnly = true)
-    public List<DettaglioCarrello> getDettagliCarrelloOrderedByPrezzoAsc(Carrello carrello){return dettaglioCarrelloRepository.findAllOrderByPrezzoAsc(carrello);}
+    public List<DettaglioCarrelloDTO> getDettagliCarrelloOrderedByPrezzoAsc(Carrello carrello){return DettaglioCarrelloMapper.toDTOList(dettaglioCarrelloRepository.findAllOrderByPrezzoAsc(carrello));}
 
     //tutti i dettagli carrello ordinati in senso CRESCENTE per quantita
     @Transactional(readOnly = true)
-    public List<DettaglioCarrello> getDettagliCarrelloOrderedByQuantitaAsc(Carrello carrello){return dettaglioCarrelloRepository.findAllByOrderByQuantitaAsc(carrello);}
+    public List<DettaglioCarrelloDTO> getDettagliCarrelloOrderedByQuantitaAsc(Carrello carrello){return DettaglioCarrelloMapper.toDTOList(dettaglioCarrelloRepository.findAllByOrderByQuantitaAsc(carrello));}
 
     //tutti i dettagli carrello ordinati in senso DECRESCENTE per prezzo
     @Transactional(readOnly = true)
-    public List<DettaglioCarrello> getDettagliCarrelloOrderedByQuantitaDesc(Carrello carrello){return dettaglioCarrelloRepository.findAllByOrderByQuantitaDesc(carrello);}
+    public List<DettaglioCarrelloDTO> getDettagliCarrelloOrderedByQuantitaDesc(Carrello carrello){return DettaglioCarrelloMapper.toDTOList(dettaglioCarrelloRepository.findAllByOrderByQuantitaDesc(carrello));}
 
 
 }

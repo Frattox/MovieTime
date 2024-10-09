@@ -48,4 +48,13 @@ public class DettaglioCarrelloMapper {
                 .map(DettaglioCarrelloMapper::toDTO) // Usa il metodo toDTO per convertire ogni dettaglioCarrello
                 .collect(Collectors.toList());
     }
+
+    public static List<DettaglioCarrello> toDettaglioCarrelloList(List<DettaglioCarrelloDTO> dettagliCarrelloDTO) {
+        if (dettagliCarrelloDTO == null) {
+            return null;
+        }
+        return dettagliCarrelloDTO.stream()
+                .map(DettaglioCarrelloMapper::toDettaglioCarrello) // Usa il metodo toDettaglioCarrello per convertire ogni DTO
+                .collect(Collectors.toList());
+    }
 }
