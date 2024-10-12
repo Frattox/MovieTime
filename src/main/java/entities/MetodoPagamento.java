@@ -27,5 +27,4 @@ public class MetodoPagamento {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ID_cliente", nullable = false)
     private Cliente metodoPagamentoCliente;
-
 }

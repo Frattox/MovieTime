@@ -49,6 +49,7 @@ public class OrdineService {
     @Transactional
     public void acquistaDalCarrello(int idCliente, String indirizzo, MetodoPagamentoDTO metodoPagamentoDTO, List<DettaglioCarrelloDTO> dettagliCarrelloDTO)
             throws FilmWornOutException, ClienteNotFoundException, FilmNotFoundException, DettaglioCarrelloNotFoundException {
+
         Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(ClienteNotFoundException::new);
 
         //la lista di dettagli carrello me la invia il client e da lì verifico che non esistono incongruenze con il db
@@ -62,6 +63,8 @@ public class OrdineService {
         }
 
         Carrello carrello = cliente.getCarrello();
+
+        //creo il nuovo ordine
         Ordine ordine = new Ordine();
         ordine.setCliente(cliente);
         MetodoPagamento metodoPagamento = getMetodoPagamento(metodoPagamentoDTO);
@@ -81,7 +84,7 @@ public class OrdineService {
         List<DettaglioOrdine> dettagliOrdine = new LinkedList<>();
         Map<Film,Integer> films = new HashMap<>();
 
-        //prima prendo le informazioni del carrello e le genero come un nuovo ordine
+        //prima prendo le informazioni del carrello e genero come un nuovo ordine
         for(DettaglioCarrello dettaglioCarrello: dettagliCarrello)
         {
             DettaglioOrdine dettaglioOrdine = new DettaglioOrdine();
@@ -100,9 +103,6 @@ public class OrdineService {
             dettaglioOrdine.setPrezzoUnita(dettaglioCarrello.getPrezzoUnita());
 
             dettagliOrdine.add(dettaglioOrdine);
-
-            //DA EVITARE: casomai ad un certo punto parte l'eccezione per uno dei dettagli
-            //dettaglioOrdineRepository.save(dettaglioOrdine);
         }
 
         //meglio salvare la lista dopo che sia stata recuperata interamente, senza eccezioni
@@ -114,9 +114,9 @@ public class OrdineService {
             f = filmRepository.findByIdWithLock(f.getIdFilm()).orElseThrow(FilmNotFoundException::new);
             f.setQuantita(newQuantity);
         }
+
         filmRepository.saveAll(films.keySet());
         ordineRepository.save(ordine);
-
     }
 
 
@@ -127,18 +127,21 @@ public class OrdineService {
         );
     }
 
+    //cliccare un film e acquistare direttamente quel film, senza passare dal carrello
     @Transactional
-    public void acquistaFilm(int idCliente, FilmDTO filmDTO, int quantity,  String indirizzo, MetodoPagamentoDTO metodoPagamentoDTO) throws ClienteNotFoundException, FilmNotFoundException, FilmWornOutException {
+    public void acquistaFilm(int idCliente, int idFilm, int quantity,  String indirizzo, MetodoPagamentoDTO metodoPagamentoDTO) throws ClienteNotFoundException, FilmNotFoundException, FilmWornOutException {
         Cliente cliente = clienteRepository.findById(idCliente)
                 .orElseThrow(ClienteNotFoundException::new);
 
-        Film film = filmRepository.findById(
-                FilmMapper.toFilm(filmDTO).getIdFilm()
-        ).orElseThrow(FilmNotFoundException::new);
+        //recupero il film
+        Film film = filmRepository.findById(idFilm).orElseThrow(FilmNotFoundException::new);
+        //verifico che sia disponibile la quantità richiesta
         if(!Utils.isQuantityOk(film,quantity)) throw new FilmWornOutException();
 
+        //recupero il metodo di pagamento
         MetodoPagamento metodoPagamento = getMetodoPagamento(metodoPagamentoDTO);
 
+        //genero l'ordine
         Ordine ordine = new Ordine();
         ordine.setStato("Preparazione");
         ordine.setCliente(cliente);
@@ -147,6 +150,7 @@ public class OrdineService {
         ordine.setCarrello(cliente.getCarrello());
         ordine.setDataOrdine(LocalDateTime.now());
 
+        //genero il dettaglio ordine
         DettaglioOrdine dettaglioOrdine = new DettaglioOrdine();
         dettaglioOrdine.setOrdine(ordine);
         dettaglioOrdine.setFilm(film);
@@ -159,7 +163,7 @@ public class OrdineService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrdineDTO> getAllOrdini(int pageNumber){
+    public List<OrdineDTO> getAllOrdiniPaged(int pageNumber){
         Pageable pageable = PageRequest.of(pageNumber,20);
         Page<Ordine> page = ordineRepository.findAll(pageable);
         if(page.isEmpty())
@@ -181,7 +185,7 @@ public class OrdineService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrdineDTO> getOrdiniOrderedByDataAsc(int idCliente, int pageNumber){
+    public List<OrdineDTO> getOrdiniOrderedByDataAscPaged(int idCliente, int pageNumber){
         Page<Ordine> page = ordineRepository.findAllOrderByDataAsc(idCliente, PageRequest.of(pageNumber,20));
         if(page.isEmpty())
             return new ArrayList<>();
@@ -189,7 +193,7 @@ public class OrdineService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrdineDTO> getOrdiniOrderedByDataDesc(int idCliente, int pageNumber){
+    public List<OrdineDTO> getOrdiniOrderedByDataDescPaged(int idCliente, int pageNumber){
         Page<Ordine> page = ordineRepository.findAllOrderByDataDesc(idCliente, PageRequest.of(pageNumber,20));
         if(page.isEmpty())
             return new ArrayList<>();

@@ -11,7 +11,7 @@ import java.util.Objects;
 
 @Data
 @Entity
-@EntityListeners(AuditingEntityListener.class)//todo: da guardare meglio (by dome)
+@EntityListeners(AuditingEntityListener.class) //per la data registrazione
 @AllArgsConstructor
 @NoArgsConstructor
 public class Cliente {
@@ -35,7 +35,8 @@ public class Cliente {
     @Basic
     @Column(name = "Password", nullable = false, length = -1)
     private String password;
-    @CreatedDate
+
+    @CreatedDate //così crea automaticamente la data al momento della registrazione
     @Basic
     @Column(name = "Data_registrazione", nullable = false)
     private Date dataRegistrazione;

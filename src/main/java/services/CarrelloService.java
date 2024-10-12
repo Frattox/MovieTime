@@ -159,6 +159,4 @@ public class CarrelloService {
     //tutti i dettagli carrello ordinati in senso DECRESCENTE per prezzo
     @Transactional(readOnly = true)
     public List<DettaglioCarrelloDTO> getDettagliCarrelloOrderedByQuantitaDesc(Carrello carrello){return DettaglioCarrelloMapper.toDTOList(dettaglioCarrelloRepository.findAllByOrderByQuantitaDesc(carrello));}
-
-
 }
