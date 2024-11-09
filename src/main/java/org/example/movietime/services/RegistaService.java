@@ -17,6 +17,7 @@ public class RegistaService{
         this.registaRepository = registaRepository;
     }
 
+    //Utile per ottenere le informazioni del regista per una schermata dedicata solo a lui
     @Transactional(readOnly = true)
     public RegistaDTO getRegista(int idRegista) throws RegistaNotFoundException {
         return RegistaMapper.toRegistaDTO(

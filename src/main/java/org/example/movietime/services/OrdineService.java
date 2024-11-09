@@ -28,24 +28,27 @@ public class OrdineService {
     private final FilmRepository filmRepository;
     private final ClienteRepository clienteRepository;
     private final MetodoPagamentoRepository metodoPagamentoRepository;
+    private final CarrelloRepository carrelloRepository;
 
     public OrdineService(OrdineRepository ordineRepository
             , DettaglioOrdineRepository dettaglioOrdineRepository, DettaglioCarrelloRepository dettaglioCarrelloRepository
             , FilmRepository filmRepository
             , ClienteRepository clienteRepository
-            , MetodoPagamentoRepository metodoPagamentoRepository) {
+            , MetodoPagamentoRepository metodoPagamentoRepository
+            , CarrelloRepository carrelloRepository) {
         this.ordineRepository = ordineRepository;
         this.dettaglioOrdineRepository = dettaglioOrdineRepository;
         this.dettaglioCarrelloRepository = dettaglioCarrelloRepository;
         this.filmRepository = filmRepository;
         this.clienteRepository = clienteRepository;
         this.metodoPagamentoRepository = metodoPagamentoRepository;
+        this.carrelloRepository = carrelloRepository;
     }
 
     //Il momento in cui il cliente effettua l'acquisto dal carrello
     @Transactional
     public void acquistaDalCarrello(int idCliente, String indirizzo, MetodoPagamentoDTO metodoPagamentoDTO, List<DettaglioCarrelloDTO> dettagliCarrelloDTO)
-            throws FilmWornOutException, ClienteNotFoundException, FilmNotFoundException, DettaglioCarrelloNotFoundException {
+            throws FilmWornOutException, ClienteNotFoundException, FilmNotFoundException, DettaglioCarrelloNotFoundException, CarrelloNotFoundException {
 
         Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(ClienteNotFoundException::new);
 
@@ -59,7 +62,8 @@ public class OrdineService {
             dettagliCarrello.add(dettaglioCarrello);
         }
 
-        Carrello carrello = cliente.getCarrello();
+        Carrello carrello = carrelloRepository.findByIdCliente(idCliente)
+                .orElseThrow(CarrelloNotFoundException::new);
 
         //creo il nuovo ordine
         Ordine ordine = new Ordine();
@@ -126,7 +130,7 @@ public class OrdineService {
 
     //cliccare un film e acquistare direttamente quel film, senza passare dal carrello
     @Transactional
-    public void acquistaFilm(int idCliente, int idFilm, int quantity,  String indirizzo, MetodoPagamentoDTO metodoPagamentoDTO) throws ClienteNotFoundException, FilmNotFoundException, FilmWornOutException {
+    public void acquistaFilm(int idCliente, int idFilm, int quantity,  String indirizzo, MetodoPagamentoDTO metodoPagamentoDTO) throws ClienteNotFoundException, FilmNotFoundException, FilmWornOutException, CarrelloNotFoundException {
         Cliente cliente = clienteRepository.findById(idCliente)
                 .orElseThrow(ClienteNotFoundException::new);
 
@@ -138,13 +142,17 @@ public class OrdineService {
         //recupero il metodo di pagamento
         MetodoPagamento metodoPagamento = getMetodoPagamento(metodoPagamentoDTO);
 
+        //recupero il carrello
+        Carrello carrello = carrelloRepository.findByIdCliente(idCliente)
+                .orElseThrow(CarrelloNotFoundException::new);
+
         //genero l'ordine
         Ordine ordine = new Ordine();
         ordine.setStato("Preparazione");
         ordine.setCliente(cliente);
         ordine.setMetodoPagamento(metodoPagamento);
         ordine.setIndirizzo(indirizzo);
-        ordine.setCarrello(cliente.getCarrello());
+        ordine.setCarrello(carrello);
         ordine.setDataOrdine(LocalDateTime.now());
 
         //genero il dettaglio ordine

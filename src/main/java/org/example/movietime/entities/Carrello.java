@@ -5,17 +5,17 @@ import lombok.*;
 
 @Data
 @Entity
-@Table(name = "Carrello")
+@Table(name = "carrello")
 public class Carrello {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "cliente", nullable = false)
+    @Column(name = "id_carrello", nullable = false)
     private int idCarrello;
 
     //RELAZIONI
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "cliente", nullable = false)
+    @JoinColumn(name = "id_cliente", nullable = false)
     private Cliente cliente;
 
 }

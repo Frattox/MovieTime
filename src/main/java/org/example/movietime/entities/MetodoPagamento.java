@@ -8,20 +8,21 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "metodo_pagamento")
 public class MetodoPagamento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "ID_metodo_pagamento", nullable = false)
+    @Column(name = "id_metodo_pagamento", nullable = false)
     private int idMetodoPagamento;
     @Basic
-    @Column(name = "Tipo", nullable = false, length = -1)
+    @Column(name = "tipo", nullable = false, length = -1)
     private String tipo;
     @Basic
-    @Column(name = "Numero", nullable = false, precision = 0)
+    @Column(name = "numero", nullable = false, precision = 0)
     private int numero;
 
     //RELAZIONI
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "ID_cliente", nullable = false)
+    @JoinColumn(name = "id_cliente", nullable = false)
     private Cliente cliente;
 }

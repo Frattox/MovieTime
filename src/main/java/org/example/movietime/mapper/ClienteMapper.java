@@ -16,12 +16,10 @@ public class ClienteMapper {
                 clienteDTO.getIdCliente(),
                 clienteDTO.getNome(),
                 clienteDTO.getCognome(),
-                clienteDTO.getUsername(),
                 clienteDTO.getEmail(),
                 clienteDTO.getPassword(),
                 clienteDTO.getDataRegistrazione(),
                 //todo: da vedere meglio come sistemare
-                null, // carrello non è presente nel DTO
                 null, // ordini non è presente nel DTO
                 null  // metodiPagamento non è presente nel DTO
         );
@@ -38,7 +36,6 @@ public class ClienteMapper {
                 cliente.getIdCliente(),
                 cliente.getNome(),
                 cliente.getCognome(),
-                cliente.getUsername(),
                 cliente.getEmail(),
                 cliente.getPassword(),
                 cliente.getDataRegistrazione()

@@ -8,23 +8,24 @@ import lombok.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "dettaglio_carrello")
 public class DettaglioCarrello {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "ID_dettaglio_carrello", nullable = false)
+    @Column(name = "id_dettaglio_carrello", nullable = false)
     private int idDettaglioCarrello;
     @Basic
-    @Column(name = "Quantita", nullable = false, precision = 0)
+    @Column(name = "quantita", nullable = false, precision = 0)
     private int quantita;
     @Basic
-    @Column(name = "Prezzo_unita", nullable = false, precision = 0)
+    @Column(name = "prezzo_unita", nullable = false, precision = 0)
     private float prezzoUnita;
 
     //RELAZIONI
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "ID_carrello", nullable = false)
+    @JoinColumn(name = "id_carrello", nullable = false)
     private Carrello carrello;
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "ID_film", nullable = false)
+    @JoinColumn(name = "id_film", nullable = false)
     private Film film;
 }

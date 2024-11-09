@@ -24,15 +24,16 @@ public class FilmController {
 
     // Endpoint per ottenere tutti i film con paginazione
     @GetMapping
-    public ResponseEntity<List<FilmDTO>> getAllFilms(@RequestParam(defaultValue = "0") @Min(0) int page) {
-        System.out.println("Suca");
+    public ResponseEntity<List<FilmDTO>> getAllFilms(
+            @RequestParam(defaultValue = "0") @Min(0) int page) {
         List<FilmDTO> films = filmService.getAllFilms(page);
         return ResponseEntity.ok(films);
     }
 
     // Endpoint per ottenere i dettagli di un singolo film
     @GetMapping("/{id}")
-    public ResponseEntity<FilmDTO> getFilm(@PathVariable @Min(1) int id) throws FilmNotFoundException {
+    public ResponseEntity<FilmDTO> getFilm(
+            @PathVariable @Min(1) int id) throws FilmNotFoundException {
         FilmDTO film = filmService.getFilm(id);
         return ResponseEntity.ok(film);
     }

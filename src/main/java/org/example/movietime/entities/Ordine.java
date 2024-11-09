@@ -13,33 +13,34 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "ordine")
 public class Ordine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "ID_ordine", nullable = false)
+    @Column(name = "id_ordine", nullable = false)
     private int idOrdine;
 
     @Basic
-    @Column(name = "Data_ordine", nullable = false)
+    @Column(name = "data_ordine", nullable = false)
     private LocalDateTime dataOrdine;
     @Basic
-    @Column(name = "Stato", nullable = false, length = -1)
+    @Column(name = "stato", nullable = false, length = -1)
     private String stato;
     @Basic
-    @Column(name = "Indirizzo", nullable = false, length = -1)
+    @Column(name = "indirizzo", nullable = false, length = -1)
     private String indirizzo;
 
     //RELAZIONI
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "ID_cliente", nullable = false)
+    @JoinColumn(name = "id_cliente", nullable = false)
     private Cliente cliente;
 
     @OneToOne
-    @JoinColumn(name = "ID_carrello", nullable = false)
+    @JoinColumn(name = "id_carrello", nullable = false)
     private Carrello carrello;
 
     @ManyToOne
-    @JoinColumn(name = "ID_metodo_pagamento", nullable = false)
+    @JoinColumn(name = "id_metodo_pagamento", nullable = false)
     private MetodoPagamento metodoPagamento;
 
     @OneToMany(mappedBy = "ordine", cascade = CascadeType.ALL)

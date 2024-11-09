@@ -7,22 +7,25 @@ import org.example.movietime.dto.DettaglioCarrelloDTO;
 import org.example.movietime.entities.Carrello;
 import org.example.movietime.entities.DettaglioCarrello;
 import org.example.movietime.entities.Film;
+import org.example.movietime.exceptions.*;
 import org.example.movietime.mapper.DettaglioCarrelloMapper;
+import org.example.movietime.mapper.FilmMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 import org.example.movietime.repositories.CarrelloRepository;
 import org.example.movietime.repositories.ClienteRepository;
 import org.example.movietime.repositories.DettaglioCarrelloRepository;
 import org.example.movietime.repositories.FilmRepository;
-import org.example.movietime.exceptions.ClienteNotFoundException;
-import org.example.movietime.exceptions.DettaglioCarrelloNotFoundException;
-import org.example.movietime.exceptions.FilmNotFoundException;
-import org.example.movietime.exceptions.FilmWornOutException;
 import org.example.movietime.util.Utils;
 
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CarrelloService {
@@ -30,6 +33,7 @@ public class CarrelloService {
     private final DettaglioCarrelloRepository dettaglioCarrelloRepository;
     private final FilmRepository filmRepository;
     private final CarrelloRepository carrelloRepository;
+    private final int PAGE_SIZE = 20;
     public CarrelloService(ClienteRepository clienteRepository,
                            DettaglioCarrelloRepository dettaglioCarrelloRepository,
                            FilmRepository filmRepository,
@@ -43,7 +47,7 @@ public class CarrelloService {
 
     @Transactional
     public void aggiungiAlCarrello(int idCliente, String titolo, String formato, int quantity)
-            throws FilmWornOutException, FilmNotFoundException, ClienteNotFoundException{
+            throws FilmWornOutException, FilmNotFoundException, ClienteNotFoundException, CarrelloNotFoundException {
         //verifica che la quantità sia positiva
         if(quantity <= 0) throw new InvalidParameterException();
 
@@ -54,7 +58,7 @@ public class CarrelloService {
         if(!Utils.isQuantityOk(film,quantity))throw new FilmWornOutException();
 
         //reperisco il carrello associato al cliente
-        Carrello carrello = clienteRepository.findById(idCliente).orElseThrow(ClienteNotFoundException::new).getCarrello();
+        Carrello carrello = carrelloRepository.findByIdCliente(idCliente).orElseThrow(CarrelloNotFoundException::new);
 
         Optional<DettaglioCarrello> optionalDettaglioCarrello = dettaglioCarrelloRepository.findByFilmAndCarrello(film, carrello);
 
@@ -130,32 +134,47 @@ public class CarrelloService {
                 .orElseThrow(FilmNotFoundException::new);
     }
 
+    @Transactional(readOnly = true)
+    public Optional<Carrello> findByIdCliente(int idCliente) {
+        return carrelloRepository.findByIdCliente(idCliente);
+    }
 
     //quando si cerca il titolo (anche incompleto)
     @Transactional(readOnly = true)
     public List<DettaglioCarrelloDTO> searchDettaglioCarrello(String titolo, Carrello carrello){return DettaglioCarrelloMapper.toDTOList(dettaglioCarrelloRepository.findByTitleLike(titolo, carrello));}
 
-    //tutti i dettagli carrello ordinati in senso DECRESCENTE per titolo
     @Transactional(readOnly = true)
-    public List<DettaglioCarrelloDTO> getDettagliCarrelloOrderedByTitoloDesc(Carrello carrello){return DettaglioCarrelloMapper.toDTOList(dettaglioCarrelloRepository.findAllOrderByTitoloDesc(carrello));}
+    public List<DettaglioCarrelloDTO> getDettagliCarrelloOrdinati(Carrello carrello, int pageNumber, String sortBy, String order) {
+        Pageable pageable = PageRequest.of(pageNumber, PAGE_SIZE);
+        Page<DettaglioCarrello> page;
 
-    //tutti i dettagli carrello ordinati in senso CRESCENTE per titolo
-    @Transactional(readOnly = true)
-    public List<DettaglioCarrelloDTO> getDettagliCarrelloOrderedByTitoloAsc(Carrello carrello){return DettaglioCarrelloMapper.toDTOList(dettaglioCarrelloRepository.findAllOrderByTitoloAsc(carrello));}
+        switch (sortBy.toLowerCase()) {
+            case "titolo":
+                page = order.equalsIgnoreCase("asc")
+                        ? dettaglioCarrelloRepository.findAllOrderByTitoloAsc(carrello, pageable)
+                        : dettaglioCarrelloRepository.findAllOrderByTitoloDesc(carrello, pageable);
+                break;
+            case "prezzo":
+                page = order.equalsIgnoreCase("asc")
+                        ? dettaglioCarrelloRepository.findAllOrderByPrezzoAsc(carrello, pageable)
+                        : dettaglioCarrelloRepository.findAllOrderByPrezzoDesc(carrello, pageable);
+                break;
+            case "quantita":
+                page = order.equalsIgnoreCase("asc")
+                        ? dettaglioCarrelloRepository.findAllByOrderByQuantitaAsc(carrello, pageable)
+                        : dettaglioCarrelloRepository.findAllByOrderByQuantitaDesc(carrello, pageable);
+                break;
+            default:
+                return new ArrayList<>(); // Ritorna una lista vuota se sortBy non è valido
+        }
 
-    //tutti i dettagli carrello ordinati in senso DECRESCENTE per prezzo
-    @Transactional(readOnly = true)
-    public List<DettaglioCarrelloDTO> getDettagliCarrelloOrderedByPrezzoDesc(Carrello carrello){return DettaglioCarrelloMapper.toDTOList(dettaglioCarrelloRepository.findAllOrderByPrezzoDesc(carrello));}
+        if (page.isEmpty())
+            return new ArrayList<>();
 
-    //tutti i dettagli carrello ordinati in senso CRESCENTE per prezzo
-    @Transactional(readOnly = true)
-    public List<DettaglioCarrelloDTO> getDettagliCarrelloOrderedByPrezzoAsc(Carrello carrello){return DettaglioCarrelloMapper.toDTOList(dettaglioCarrelloRepository.findAllOrderByPrezzoAsc(carrello));}
+        return page.getContent().stream().map(DettaglioCarrelloMapper::toDTO).collect(Collectors.toList());
+    }
 
-    //tutti i dettagli carrello ordinati in senso CRESCENTE per quantita
-    @Transactional(readOnly = true)
-    public List<DettaglioCarrelloDTO> getDettagliCarrelloOrderedByQuantitaAsc(Carrello carrello){return DettaglioCarrelloMapper.toDTOList(dettaglioCarrelloRepository.findAllByOrderByQuantitaAsc(carrello));}
 
-    //tutti i dettagli carrello ordinati in senso DECRESCENTE per prezzo
-    @Transactional(readOnly = true)
-    public List<DettaglioCarrelloDTO> getDettagliCarrelloOrderedByQuantitaDesc(Carrello carrello){return DettaglioCarrelloMapper.toDTOList(dettaglioCarrelloRepository.findAllByOrderByQuantitaDesc(carrello));}
+
+
 }

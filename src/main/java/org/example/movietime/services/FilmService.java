@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public class FilmService {
 
     private final FilmRepository filmRepository;
+    private final int PAGE_SIZE = 20;
 
     public FilmService(FilmRepository filmRepository){
         this.filmRepository = filmRepository;
@@ -28,7 +29,7 @@ public class FilmService {
     //per i prodotti principali presenti in home
     @Transactional(readOnly = true)
     public List<FilmDTO> getAllFilms(int pageNumber){
-        Pageable pageable = PageRequest.of(pageNumber,20);
+        Pageable pageable = PageRequest.of(pageNumber,PAGE_SIZE);
         Page<Film> page = filmRepository.findAll(pageable);
         if(page.isEmpty())
             return new ArrayList<>();
@@ -47,7 +48,7 @@ public class FilmService {
     //per la ricerca di film
     @Transactional(readOnly = true)
     public List<FilmDTO> getAllFilmsLike(String titolo, int pageNumber){
-        Pageable pageable = PageRequest.of(pageNumber,20);
+        Pageable pageable = PageRequest.of(pageNumber,PAGE_SIZE);
         Page<Film> page = filmRepository.findAllByTitolo(titolo, pageable);
         if(page.isEmpty())
             return new ArrayList<>();

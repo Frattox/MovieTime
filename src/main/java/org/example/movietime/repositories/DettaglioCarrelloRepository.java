@@ -4,6 +4,8 @@ import org.example.movietime.entities.Carrello;
 import org.example.movietime.entities.DettaglioCarrello;
 import org.example.movietime.entities.Film;
 import jakarta.persistence.LockModeType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -31,21 +33,21 @@ public interface DettaglioCarrelloRepository extends JpaRepository<DettaglioCarr
     List<DettaglioCarrello> findByTitleLike(@Param("titolo") String titolo, @Param("carrello") Carrello carrello);
 
     @Query("SELECT d FROM DettaglioCarrello d WHERE d.carrello=:carrello ORDER BY d.film.titolo DESC")
-    List<DettaglioCarrello> findAllOrderByTitoloDesc(@Param("carrello") Carrello carrello);
+    Page<DettaglioCarrello> findAllOrderByTitoloDesc(@Param("carrello") Carrello carrello, Pageable pageable);
 
     @Query("SELECT d FROM DettaglioCarrello d WHERE d.carrello=:carrello ORDER BY d.film.titolo ASC")
-    List<DettaglioCarrello> findAllOrderByTitoloAsc(@Param("carrello") Carrello carrello);
+    Page<DettaglioCarrello> findAllOrderByTitoloAsc(@Param("carrello") Carrello carrello, Pageable pageable);
 
     @Query("SELECT d FROM DettaglioCarrello d WHERE d.carrello=:carrello ORDER BY d.film.prezzo DESC")
-    List<DettaglioCarrello> findAllOrderByPrezzoDesc(@Param("carrello") Carrello carrello);
+    Page<DettaglioCarrello> findAllOrderByPrezzoDesc(@Param("carrello") Carrello carrello, Pageable pageable);
 
     @Query("SELECT d FROM DettaglioCarrello d WHERE d.carrello=:carrello ORDER BY d.film.prezzo ASC")
-    List<DettaglioCarrello> findAllOrderByPrezzoAsc(@Param("carrello") Carrello carrello);
+    Page<DettaglioCarrello> findAllOrderByPrezzoAsc(@Param("carrello") Carrello carrello, Pageable pageable);
 
     @Query("SELECT d FROM DettaglioCarrello d WHERE d.carrello=:carrello ORDER BY d.film.prezzo ASC")
-    List<DettaglioCarrello> findAllByOrderByQuantitaAsc(@Param("carrello") Carrello carrello);
+    Page<DettaglioCarrello> findAllByOrderByQuantitaAsc(@Param("carrello") Carrello carrello, Pageable pageable);
 
     @Query("SELECT d FROM DettaglioCarrello d WHERE d.carrello=:carrello ORDER BY d.film.prezzo DESC")
-    List<DettaglioCarrello> findAllByOrderByQuantitaDesc(@Param("carrello") Carrello carrello);
+    Page<DettaglioCarrello> findAllByOrderByQuantitaDesc(@Param("carrello") Carrello carrello, Pageable pageable);
 
 }

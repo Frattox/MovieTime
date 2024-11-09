@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 //@Data specifica setter, getter, toString, equals e hashCode
+@Table(name = "film")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

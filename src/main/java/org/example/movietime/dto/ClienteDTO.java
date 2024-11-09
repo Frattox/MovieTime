@@ -23,10 +23,6 @@ public class ClienteDTO {
     @Size(min = 1, max = 100, message = "Il cognome deve avere tra 1 e 100 caratteri")
     private String cognome;
 
-    @NotBlank(message = "L'username non può essere vuoto")
-    @Size(min = 1, max = 50, message = "L'username deve avere tra 1 e 50 caratteri")
-    private String username;
-
     @NotBlank(message = "L'email non può essere vuota")
     @Email(message = "Deve essere un'email valida")
     @Size(max = 100, message = "L'email non può superare i 100 caratteri")
