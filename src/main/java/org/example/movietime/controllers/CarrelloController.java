@@ -3,10 +3,7 @@ package org.example.movietime.controllers;
 import org.example.movietime.dto.DettaglioCarrelloDTO;
 import org.example.movietime.entities.Carrello;
 import org.example.movietime.entities.Cliente;
-import org.example.movietime.exceptions.CarrelloNotFoundException;
-import org.example.movietime.exceptions.ClienteNotFoundException;
-import org.example.movietime.exceptions.FilmNotFoundException;
-import org.example.movietime.exceptions.FilmWornOutException;
+import org.example.movietime.exceptions.*;
 import org.example.movietime.repositories.ClienteRepository;
 import org.example.movietime.services.CarrelloService;
 import org.springframework.http.HttpStatus;
@@ -22,30 +19,39 @@ import java.util.Optional;
 public class CarrelloController {
 
     private final CarrelloService carrelloService;
-    private final ClienteRepository clienteRepository;
 
-    public CarrelloController(CarrelloService carrelloService, ClienteRepository clienteRepository){this.carrelloService=carrelloService;
-        this.clienteRepository = clienteRepository;
+    public CarrelloController(CarrelloService carrelloService){
+        this.carrelloService=carrelloService;
     }
 
-    @GetMapping("/dettagli-carrello/ordinati")
+    @GetMapping("/dettagli-carrello")
     public ResponseEntity<List<DettaglioCarrelloDTO>> getDettagliCarrelloOrdinati(
             @RequestParam int idCliente,
             @RequestParam(name = "p", defaultValue = "0") int pageNumber,
             @RequestParam String sortBy,
             @RequestParam String order) {
-
-        Optional<Carrello> carrello = carrelloService.findByIdCliente(idCliente);
-
-        if (carrello.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // Restituisce 403 se il carrello non è del cliente
+        List<DettaglioCarrelloDTO> dettagliCarrello = null;
+        try {
+            dettagliCarrello = carrelloService.getDettagliCarrelloOrdinati(idCliente, pageNumber, sortBy, order);
+        } catch (CarrelloNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-
-        List<DettaglioCarrelloDTO> dettagliCarrello = carrelloService.getDettagliCarrelloOrdinati(carrello.get(), pageNumber, sortBy, order);
         return ResponseEntity.ok(dettagliCarrello);
     }
 
-    @PostMapping("/aggiungi-al-carrello")
+    @GetMapping("/dettaglio")
+    public ResponseEntity<DettaglioCarrelloDTO> getDettaglioCarrello(
+            @RequestParam int idDettaglioCarrello,
+            @RequestParam int idCliente) {
+        try {
+            DettaglioCarrelloDTO dettaglioCarrelloDTO = carrelloService.getSingleDettaglioCarrello(idDettaglioCarrello,idCliente);
+            return ResponseEntity.ok(dettaglioCarrelloDTO);
+        } catch (FilmNotFoundException | CarrelloNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    @PostMapping("/aggiungi")
     public ResponseEntity<String> aggiungiAlCarrello(
             @RequestParam int idCliente,
             @RequestParam String titolo,
@@ -66,7 +72,6 @@ public class CarrelloController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quantità non valida");
         }
     }
-
 
 
 }

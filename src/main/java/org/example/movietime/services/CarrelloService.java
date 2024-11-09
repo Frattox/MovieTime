@@ -111,42 +111,26 @@ public class CarrelloService {
     }
 
     //quando si clicca sul singolo dettaglio carrello
-    @Transactional
-    public void rimuoviDettaglioCarrello(int idDettaglioCarrello, int idCarrello)
-    {
-        Optional<DettaglioCarrello> optionalDettaglioCarrello = dettaglioCarrelloRepository.findByIdDettaglioCarrelloAndCarrello(idDettaglioCarrello,carrelloRepository.findById(idCarrello).orElseThrow());
-        optionalDettaglioCarrello.ifPresent(dettaglioCarrello -> dettaglioCarrelloRepository.deleteById(dettaglioCarrello.getIdDettaglioCarrello()));
-    }
-
-    //selezioni più di un film da eliminare
-    @Transactional
-    public void rimuoviDettagliCarrello(List<DettaglioCarrelloDTO> dettagliCarrelloDTO, Carrello carrello){dettaglioCarrelloRepository.deleteAllByDettagliCarrello(DettaglioCarrelloMapper.toDettaglioCarrelloList(dettagliCarrelloDTO));}
-
     @Transactional(readOnly = true)
-    public List<DettaglioCarrelloDTO> getAllDettagliCarrello(){return DettaglioCarrelloMapper.toDTOList(dettaglioCarrelloRepository.findAll());}
-
-    //quando si clicca sul singolo dettaglio carrello
-    @Transactional(readOnly = true)
-    public DettaglioCarrelloDTO getSingleDettaglioCarrello(int id) throws FilmNotFoundException {
-        Optional<DettaglioCarrello> optionalDettaglioCarrello = dettaglioCarrelloRepository.findById(id);
+    public DettaglioCarrelloDTO getSingleDettaglioCarrello(int idDettaglioCarrello, int idCliente)
+            throws FilmNotFoundException, CarrelloNotFoundException {
+        Carrello carrello = carrelloRepository.findByIdCliente(idCliente).orElseThrow(CarrelloNotFoundException::new);
+        Optional<DettaglioCarrello> optionalDettaglioCarrello = dettaglioCarrelloRepository.findByIdDettaglioCarrelloAndCarrello(idDettaglioCarrello,carrello);
         return optionalDettaglioCarrello
                 .map(DettaglioCarrelloMapper::toDTO)
                 .orElseThrow(FilmNotFoundException::new);
     }
 
-    @Transactional(readOnly = true)
-    public Optional<Carrello> findByIdCliente(int idCliente) {
-        return carrelloRepository.findByIdCliente(idCliente);
+    private Carrello findByIdCliente(int idCliente) throws CarrelloNotFoundException {
+        return carrelloRepository.findByIdCliente(idCliente).orElseThrow(CarrelloNotFoundException::new);
     }
 
-    //quando si cerca il titolo (anche incompleto)
     @Transactional(readOnly = true)
-    public List<DettaglioCarrelloDTO> searchDettaglioCarrello(String titolo, Carrello carrello){return DettaglioCarrelloMapper.toDTOList(dettaglioCarrelloRepository.findByTitleLike(titolo, carrello));}
-
-    @Transactional(readOnly = true)
-    public List<DettaglioCarrelloDTO> getDettagliCarrelloOrdinati(Carrello carrello, int pageNumber, String sortBy, String order) {
+    public List<DettaglioCarrelloDTO> getDettagliCarrelloOrdinati(int idCliente, int pageNumber, String sortBy, String order) throws CarrelloNotFoundException {
         Pageable pageable = PageRequest.of(pageNumber, PAGE_SIZE);
         Page<DettaglioCarrello> page;
+
+        Carrello carrello = findByIdCliente(idCliente);
 
         switch (sortBy.toLowerCase()) {
             case "titolo":
