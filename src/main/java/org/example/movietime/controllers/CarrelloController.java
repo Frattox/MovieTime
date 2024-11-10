@@ -1,10 +1,7 @@
 package org.example.movietime.controllers;
 
 import org.example.movietime.dto.DettaglioCarrelloDTO;
-import org.example.movietime.entities.Carrello;
-import org.example.movietime.entities.Cliente;
 import org.example.movietime.exceptions.*;
-import org.example.movietime.repositories.ClienteRepository;
 import org.example.movietime.services.CarrelloService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.InvalidParameterException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/carrello")
@@ -30,7 +26,7 @@ public class CarrelloController {
             @RequestParam(name = "p", defaultValue = "0") int pageNumber,
             @RequestParam String sortBy,
             @RequestParam String order) {
-        List<DettaglioCarrelloDTO> dettagliCarrello = null;
+        List<DettaglioCarrelloDTO> dettagliCarrello;
         try {
             dettagliCarrello = carrelloService.getDettagliCarrelloOrdinati(idCliente, pageNumber, sortBy, order);
         } catch (CarrelloNotFoundException e) {
@@ -72,6 +68,27 @@ public class CarrelloController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quantità non valida");
         }
     }
+
+    @PutMapping("/aggiorna")
+    public ResponseEntity<String> aggiornaIlCarrello(
+            @RequestParam int idDettaglioCarrello,
+            @RequestParam int idCliente,
+            @RequestParam int quantity,
+            @RequestParam(defaultValue = "false") boolean dec) {
+        try {
+            carrelloService.aggiornaIlCarrello(idDettaglioCarrello, idCliente, quantity, dec);
+            return ResponseEntity.ok("Quantità aggiornata con successo");
+        } catch (DettaglioCarrelloNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Dettaglio carrello non trovato");
+        } catch (FilmNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Film non trovato");
+        } catch (FilmWornOutException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Film non disponibile in quantità richiesta");
+        } catch (InvalidParameterException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quantità non valida");
+        }
+    }
+
 
 
 }

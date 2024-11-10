@@ -1,4 +1,4 @@
-package org.example.movietime.repositories;
+package org.example.movietime.exceptionHandler.repositories;
 
 import org.example.movietime.entities.Carrello;
 import org.example.movietime.entities.DettaglioCarrello;
@@ -18,8 +18,6 @@ import java.util.Optional;
 @Repository
 public interface DettaglioCarrelloRepository extends JpaRepository<DettaglioCarrello,Integer> {
 
-    @Query("DELETE FROM DettaglioCarrello d WHERE d IN ?1")
-    void deleteAllByDettagliCarrello(List<DettaglioCarrello> dettagliCarrello);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT d FROM DettaglioCarrello d WHERE d.idDettaglioCarrello = :id AND d.carrello.cliente.idCliente = :idCliente")
@@ -28,9 +26,6 @@ public interface DettaglioCarrelloRepository extends JpaRepository<DettaglioCarr
     Optional<DettaglioCarrello> findByFilmAndCarrello(Film film, Carrello carrello);
 
     Optional<DettaglioCarrello> findByIdDettaglioCarrelloAndCarrello(int idDettaglioCarrello, Carrello carrello);
-
-    @Query("SELECT d FROM DettaglioCarrello d WHERE d.film.titolo LIKE %:titolo% AND d.carrello = :carrello")
-    List<DettaglioCarrello> findByTitleLike(@Param("titolo") String titolo, @Param("carrello") Carrello carrello);
 
     @Query("SELECT d FROM DettaglioCarrello d WHERE d.carrello=:carrello ORDER BY d.film.titolo DESC")
     Page<DettaglioCarrello> findAllOrderByTitoloDesc(@Param("carrello") Carrello carrello, Pageable pageable);

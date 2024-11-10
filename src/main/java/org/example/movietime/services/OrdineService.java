@@ -3,11 +3,11 @@ package org.example.movietime.services;
 import org.example.movietime.dto.DettaglioCarrelloDTO;
 import org.example.movietime.dto.MetodoPagamentoDTO;
 import org.example.movietime.dto.OrdineDTO;
+import org.example.movietime.exceptionHandler.repositories.*;
 import org.example.movietime.exceptions.*;
 import org.example.movietime.mapper.MetodoPagamentoMapper;
 import org.example.movietime.mapper.OrdineMapper;
 import org.example.movietime.entities.*;
-import org.example.movietime.repositories.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -137,7 +137,7 @@ public class OrdineService {
         //recupero il film
         Film film = filmRepository.findById(idFilm).orElseThrow(FilmNotFoundException::new);
         //verifico che sia disponibile la quantità richiesta
-        if(!Utils.isQuantityOk(film,quantity)) throw new FilmWornOutException();
+        if(Utils.isQuantityNotOk(film, quantity)) throw new FilmWornOutException();
 
         //recupero il metodo di pagamento
         MetodoPagamento metodoPagamento = getMetodoPagamento(metodoPagamentoDTO);

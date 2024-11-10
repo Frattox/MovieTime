@@ -1,4 +1,4 @@
-package org.example.movietime.repositories;
+package org.example.movietime.exceptionHandler.repositories;
 
 import org.example.movietime.entities.Film;
 import jakarta.persistence.LockModeType;
@@ -17,7 +17,7 @@ public interface FilmRepository extends JpaRepository<Film, Integer> {
 
     Optional<Film> findByTitoloAndFormato(String titolo, String formato);
 
-    @Query("SELECT f FROM Film f WHERE f.titolo LIKE %:titolo%")
+    @Query("SELECT f FROM Film f WHERE LOWER(f.titolo) LIKE LOWER(CONCAT('%', :titolo, '%'))")
     Page<Film> findAllByTitolo(@Param("titolo") String titolo, Pageable pageable);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

@@ -9,16 +9,15 @@ import org.example.movietime.entities.DettaglioCarrello;
 import org.example.movietime.entities.Film;
 import org.example.movietime.exceptions.*;
 import org.example.movietime.mapper.DettaglioCarrelloMapper;
-import org.example.movietime.mapper.FilmMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
-import org.example.movietime.repositories.CarrelloRepository;
-import org.example.movietime.repositories.ClienteRepository;
-import org.example.movietime.repositories.DettaglioCarrelloRepository;
-import org.example.movietime.repositories.FilmRepository;
+import org.example.movietime.exceptionHandler.repositories.CarrelloRepository;
+import org.example.movietime.exceptionHandler.repositories.ClienteRepository;
+import org.example.movietime.exceptionHandler.repositories.DettaglioCarrelloRepository;
+import org.example.movietime.exceptionHandler.repositories.FilmRepository;
 import org.example.movietime.util.Utils;
 
 import java.security.InvalidParameterException;
@@ -55,7 +54,7 @@ public class CarrelloService {
         Film film = filmRepository.findByTitoloAndFormato(titolo, formato).orElseThrow(FilmNotFoundException::new);
 
         //verifica della disponibilità del film
-        if(!Utils.isQuantityOk(film,quantity))throw new FilmWornOutException();
+        if(Utils.isQuantityNotOk(film, quantity))throw new FilmWornOutException();
 
         //reperisco il carrello associato al cliente
         Carrello carrello = carrelloRepository.findByIdCliente(idCliente).orElseThrow(CarrelloNotFoundException::new);
@@ -97,16 +96,21 @@ public class CarrelloService {
 
     //modifica della quantità presente nel dettaglio carrello
     @Transactional
-    public void aggiornaIlCarrello(int idDettaglioCarrello, int quantity) throws DettaglioCarrelloNotFoundException, FilmNotFoundException, FilmWornOutException {
-        DettaglioCarrello dettaglioCarrello = dettaglioCarrelloRepository.findById(idDettaglioCarrello).orElseThrow(DettaglioCarrelloNotFoundException::new);
+    public void aggiornaIlCarrello(int idDettaglioCarrello, int idCliente, int quantity, boolean dec)
+            throws DettaglioCarrelloNotFoundException, FilmNotFoundException, FilmWornOutException {
+        //verifica che la quantità sia positiva
+        if(quantity <= 0) throw new InvalidParameterException();
+
+        DettaglioCarrello dettaglioCarrello = dettaglioCarrelloRepository.findByIdAndClienteWithLock(idDettaglioCarrello,idCliente).orElseThrow(DettaglioCarrelloNotFoundException::new);
         Film film = filmRepository.findById(dettaglioCarrello.getFilm().getIdFilm()).orElseThrow(FilmNotFoundException::new);
 
-        //verifica che la quantità sia positiva e che il film sia disponibile rispetto alla quantità fornita
-        if(quantity <= 0) throw new InvalidParameterException();
-        if(!Utils.isQuantityOk(film,quantity)) throw new FilmWornOutException();
+        int newQuantity = dec?dettaglioCarrello.getQuantita()-quantity:dettaglioCarrello.getQuantita()+quantity;
+
+        //verifica che il film sia disponibile rispetto alla quantità fornita
+        if(Utils.isQuantityNotOk(film, newQuantity)) throw new FilmWornOutException();
 
         //setting della nuova quantità
-        dettaglioCarrello.setQuantita(quantity);
+        dettaglioCarrello.setQuantita(newQuantity);
         dettaglioCarrelloRepository.save(dettaglioCarrello);
     }
 

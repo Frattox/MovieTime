@@ -6,7 +6,7 @@ import org.example.movietime.mapper.ClienteMapper;
 import org.example.movietime.mapper.MetodoPagamentoMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.example.movietime.repositories.ClienteRepository;
+import org.example.movietime.exceptionHandler.repositories.ClienteRepository;
 import org.example.movietime.exceptions.ClienteNotFoundException;
 
 import java.util.List;
