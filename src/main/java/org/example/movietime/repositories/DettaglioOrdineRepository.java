@@ -1,6 +1,7 @@
-package org.example.movietime.exceptionHandler.repositories;
+package org.example.movietime.repositories;
 
 import org.example.movietime.entities.DettaglioOrdine;
+import org.example.movietime.entities.Ordine;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,5 +13,7 @@ public interface DettaglioOrdineRepository extends JpaRepository<DettaglioOrdine
     List<DettaglioOrdine> findByPrezzoUnitaGreaterThan(float prezzo);
 
     List<DettaglioOrdine> findByPrezzoUnitaLessThan(float prezzo);
+
+    List<DettaglioOrdine> findAllByOrdine(Ordine ordine);
 
 }

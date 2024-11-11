@@ -22,7 +22,7 @@ public class MetodoPagamento {
     private int numero;
 
     //RELAZIONI
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_cliente", nullable = false)
     private Cliente cliente;
 }

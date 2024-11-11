@@ -1,4 +1,4 @@
-package org.example.movietime.exceptionHandler.repositories;
+package org.example.movietime.repositories;
 
 import org.example.movietime.entities.Carrello;
 import org.example.movietime.entities.DettaglioCarrello;
@@ -44,5 +44,7 @@ public interface DettaglioCarrelloRepository extends JpaRepository<DettaglioCarr
 
     @Query("SELECT d FROM DettaglioCarrello d WHERE d.carrello=:carrello ORDER BY d.film.prezzo DESC")
     Page<DettaglioCarrello> findAllByOrderByQuantitaDesc(@Param("carrello") Carrello carrello, Pageable pageable);
+
+
 
 }

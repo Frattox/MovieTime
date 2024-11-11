@@ -1,4 +1,4 @@
-package org.example.movietime.exceptionHandler.repositories;
+package org.example.movietime.repositories;
 
 import org.example.movietime.entities.Cliente;
 import org.example.movietime.entities.Ordine;

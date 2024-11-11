@@ -4,7 +4,7 @@ import org.example.movietime.dto.RegistaDTO;
 import org.example.movietime.mapper.RegistaMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.example.movietime.exceptionHandler.repositories.RegistaRepository;
+import org.example.movietime.repositories.RegistaRepository;
 
 import org.example.movietime.exceptions.RegistaNotFoundException;
 

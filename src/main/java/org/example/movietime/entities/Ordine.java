@@ -15,7 +15,7 @@ import java.util.List;
 @Entity
 @Table(name = "ordine")
 public class Ordine {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Id
     @Column(name = "id_ordine", nullable = false)
     private int idOrdine;
@@ -31,19 +31,16 @@ public class Ordine {
     private String indirizzo;
 
     //RELAZIONI
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_cliente", nullable = false)
     private Cliente cliente;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_carrello", nullable = false)
     private Carrello carrello;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_metodo_pagamento", nullable = false)
     private MetodoPagamento metodoPagamento;
-
-    @OneToMany(mappedBy = "ordine", cascade = CascadeType.ALL)
-    private List<DettaglioOrdine> dettagliOrdini;
 
 }

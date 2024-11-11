@@ -14,8 +14,7 @@ public class Carrello {
     private int idCarrello;
 
     //RELAZIONI
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_cliente", nullable = false)
     private Cliente cliente;
-
 }

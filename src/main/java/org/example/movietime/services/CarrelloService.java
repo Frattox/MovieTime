@@ -14,10 +14,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
-import org.example.movietime.exceptionHandler.repositories.CarrelloRepository;
-import org.example.movietime.exceptionHandler.repositories.ClienteRepository;
-import org.example.movietime.exceptionHandler.repositories.DettaglioCarrelloRepository;
-import org.example.movietime.exceptionHandler.repositories.FilmRepository;
+import org.example.movietime.repositories.CarrelloRepository;
+import org.example.movietime.repositories.ClienteRepository;
+import org.example.movietime.repositories.DettaglioCarrelloRepository;
+import org.example.movietime.repositories.FilmRepository;
 import org.example.movietime.util.Utils;
 
 import java.security.InvalidParameterException;

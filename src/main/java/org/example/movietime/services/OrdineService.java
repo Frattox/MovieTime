@@ -1,13 +1,13 @@
 package org.example.movietime.services;
 
+import org.example.movietime.dto.CarrelloDTO;
 import org.example.movietime.dto.DettaglioCarrelloDTO;
 import org.example.movietime.dto.MetodoPagamentoDTO;
 import org.example.movietime.dto.OrdineDTO;
-import org.example.movietime.exceptionHandler.repositories.*;
 import org.example.movietime.exceptions.*;
-import org.example.movietime.mapper.MetodoPagamentoMapper;
 import org.example.movietime.mapper.OrdineMapper;
 import org.example.movietime.entities.*;
+import org.example.movietime.repositories.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.example.movietime.util.Utils;
 
+import java.security.InvalidParameterException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -47,41 +48,74 @@ public class OrdineService {
 
     //Il momento in cui il cliente effettua l'acquisto dal carrello
     @Transactional
-    public void acquistaDalCarrello(int idCliente, String indirizzo, MetodoPagamentoDTO metodoPagamentoDTO, List<DettaglioCarrelloDTO> dettagliCarrelloDTO)
-            throws FilmWornOutException, ClienteNotFoundException, FilmNotFoundException, DettaglioCarrelloNotFoundException, CarrelloNotFoundException {
+    public void acquistaDalCarrello(
+            int idCliente,
+            String indirizzo,
+            int idMetodoDiPagamento,
+            CarrelloDTO carrelloDTO
+    )
+            throws FilmWornOutException, ClienteNotFoundException, FilmNotFoundException, DettaglioCarrelloNotFoundException, CarrelloNotFoundException, MetodoDiPagamentoNotFoundException {
+
+        List<Integer> idDettagliCarrello = carrelloDTO.getIdDettagliCarrello();
+        List<Integer> quantita = carrelloDTO.getQuantita();
+        List<Float> prezzi = carrelloDTO.getPrezzi();
 
         Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(ClienteNotFoundException::new);
-
-        //la lista di dettagli carrello me la invia il client e da lì verifico che non esistono incongruenze con il db
-        //così evito la race condition, prendendo il lock pessimistico
-        List<DettaglioCarrello> dettagliCarrello = new LinkedList<>();
-        for(DettaglioCarrelloDTO d: dettagliCarrelloDTO){
-            DettaglioCarrello dettaglioCarrello = dettaglioCarrelloRepository
-                    .findByIdAndClienteWithLock(d.getIdDettaglioCarrello(), idCliente)
-                    .orElseThrow(DettaglioCarrelloNotFoundException::new);
-            dettagliCarrello.add(dettaglioCarrello);
-        }
 
         Carrello carrello = carrelloRepository.findByIdCliente(idCliente)
                 .orElseThrow(CarrelloNotFoundException::new);
 
+        MetodoPagamento metodoPagamento = getMetodoPagamento(idMetodoDiPagamento, idMetodoDiPagamento);
+
+        //la lista di id dei dettagli carrello me la invia il client e da lì verifico che non esistono incongruenze con il db
+        List<DettaglioCarrello> dettagliCarrello = new LinkedList<>();
+        for(int d: idDettagliCarrello){
+            if(d<=0) throw new InvalidParameterException();
+            DettaglioCarrello dettaglioCarrello = dettaglioCarrelloRepository
+                    .findByIdAndClienteWithLock(d, idCliente)
+                    .orElseThrow(DettaglioCarrelloNotFoundException::new);
+            dettagliCarrello.add(dettaglioCarrello);
+        }
+
+        controllaDettagliCarrello(dettagliCarrello,quantita,prezzi);
+
         //creo il nuovo ordine
         Ordine ordine = new Ordine();
         ordine.setCliente(cliente);
-        MetodoPagamento metodoPagamento = getMetodoPagamento(metodoPagamentoDTO);
         ordine.setMetodoPagamento(metodoPagamento);
         ordine.setCarrello(carrello);
         ordine.setIndirizzo(indirizzo);
         ordine.setStato("Preparazione");
         ordine.setDataOrdine(LocalDateTime.now());
 
-        aggiornaOrdine(ordine,carrello,dettagliCarrello);
-
-        metodoPagamentoRepository.save(metodoPagamento);
+        aggiornaOrdine(ordine,dettagliCarrello, idDettagliCarrello, cliente);
     }
 
-    @Transactional
-    protected void aggiornaOrdine(Ordine ordine, Carrello carrello, List<DettaglioCarrello> dettagliCarrello) throws FilmWornOutException, FilmNotFoundException {
+    private void controllaDettagliCarrello(
+            List<DettaglioCarrello> dettagliCarrello,
+            List<Integer> quantita,
+            List<Float> prezzi) {
+        //hanno la stessa grandezza
+        if(dettagliCarrello.size()!=quantita.size() || dettagliCarrello.size()!=prezzi.size())
+            throw new InvalidParameterException("size");
+
+        for(int i=0; i<dettagliCarrello.size();i++){
+            //corrispondono le quantita
+            int q = dettagliCarrello.get(i).getQuantita();
+            if(q!=quantita.get(i)) throw new InvalidParameterException("quantita");
+            //corrispondono i prezzi
+            float p = dettagliCarrello.get(i).getPrezzoUnita();
+            if(p!=prezzi.get(i)) throw new InvalidParameterException("prezzo");
+        }
+    }
+
+        @Transactional
+    protected void aggiornaOrdine(
+            Ordine ordine,
+            List<DettaglioCarrello> dettagliCarrello,
+            List<Integer> idDettagliCarrello,
+            Cliente cliente
+        ) throws FilmWornOutException, FilmNotFoundException, ClienteNotFoundException, CarrelloNotFoundException, MetodoDiPagamentoNotFoundException {
         List<DettaglioOrdine> dettagliOrdine = new LinkedList<>();
         Map<Film,Integer> films = new HashMap<>();
 
@@ -106,6 +140,13 @@ public class OrdineService {
             dettagliOrdine.add(dettaglioOrdine);
         }
 
+        dettaglioCarrelloRepository.deleteAllById(idDettagliCarrello);
+
+        ordine.setCliente(clienteRepository.findById(ordine.getCliente().getIdCliente()).orElseThrow(ClienteNotFoundException::new));
+        ordine.setCarrello(carrelloRepository.findById(ordine.getCarrello().getIdCarrello()).orElseThrow(CarrelloNotFoundException::new));
+        ordine.setMetodoPagamento(metodoPagamentoRepository.findById(ordine.getMetodoPagamento().getIdMetodoPagamento()).orElseThrow(MetodoDiPagamentoNotFoundException::new));
+        ordineRepository.save(ordine);
+
         //meglio salvare la lista dopo che sia stata recuperata interamente, senza eccezioni
         dettaglioOrdineRepository.saveAll(dettagliOrdine);
 
@@ -117,20 +158,23 @@ public class OrdineService {
         }
 
         filmRepository.saveAll(films.keySet());
-        ordineRepository.save(ordine);
     }
 
 
-    private MetodoPagamento getMetodoPagamento(MetodoPagamentoDTO metodoPagamentoDTO) {
-        Optional<MetodoPagamento> metodoPagamentoOptional = metodoPagamentoRepository.findById(metodoPagamentoDTO.getIdMetodoPagamento());
-        return metodoPagamentoOptional.orElseGet(
-                () -> MetodoPagamentoMapper.toMetodoPagamento(metodoPagamentoDTO)
-        );
-    }
+    private MetodoPagamento getMetodoPagamento(int idMetodoDiPagamento, int idCliente) throws MetodoDiPagamentoNotFoundException, ClienteNotFoundException {
+        Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(ClienteNotFoundException::new);
+        return metodoPagamentoRepository.findByIdMetodoPagamentoAndCliente(idMetodoDiPagamento,cliente).orElseThrow(MetodoDiPagamentoNotFoundException::new);}
 
     //cliccare un film e acquistare direttamente quel film, senza passare dal carrello
     @Transactional
-    public void acquistaFilm(int idCliente, int idFilm, int quantity,  String indirizzo, MetodoPagamentoDTO metodoPagamentoDTO) throws ClienteNotFoundException, FilmNotFoundException, FilmWornOutException, CarrelloNotFoundException {
+    public void acquistaFilm(
+            int idCliente,
+            int idFilm,
+            int quantity,
+            String indirizzo,
+            int idMetodoDiPagamento)
+            throws ClienteNotFoundException,
+            FilmNotFoundException, FilmWornOutException, CarrelloNotFoundException, MetodoDiPagamentoNotFoundException {
         Cliente cliente = clienteRepository.findById(idCliente)
                 .orElseThrow(ClienteNotFoundException::new);
 
@@ -140,7 +184,7 @@ public class OrdineService {
         if(Utils.isQuantityNotOk(film, quantity)) throw new FilmWornOutException();
 
         //recupero il metodo di pagamento
-        MetodoPagamento metodoPagamento = getMetodoPagamento(metodoPagamentoDTO);
+        MetodoPagamento metodoPagamento = getMetodoPagamento(idMetodoDiPagamento,idCliente);
 
         //recupero il carrello
         Carrello carrello = carrelloRepository.findByIdCliente(idCliente)

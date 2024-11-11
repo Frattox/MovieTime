@@ -37,14 +37,4 @@ public class Cliente {
     @Basic
     @Column(name = "data_registrazione", nullable = false)
     private Date dataRegistrazione;
-
-    //RELAZIONI
-    //@OneToOne(mappedBy = "cliente")
-    //private Carrello carrello;
-
-    @OneToMany(mappedBy = "cliente" ,cascade = CascadeType.ALL)
-    private List<Ordine> ordini;
-
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
-    private List<MetodoPagamento> metodiPagamento;
 }

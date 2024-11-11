@@ -18,10 +18,7 @@ public class ClienteMapper {
                 clienteDTO.getCognome(),
                 clienteDTO.getEmail(),
                 clienteDTO.getPassword(),
-                clienteDTO.getDataRegistrazione(),
-                //todo: da vedere meglio come sistemare
-                null, // ordini non è presente nel DTO
-                null  // metodiPagamento non è presente nel DTO
+                clienteDTO.getDataRegistrazione()
         );
     }
 

@@ -22,10 +22,10 @@ public class DettaglioCarrello {
     private float prezzoUnita;
 
     //RELAZIONI
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_carrello", nullable = false)
     private Carrello carrello;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_film", nullable = false)
     private Film film;
 }

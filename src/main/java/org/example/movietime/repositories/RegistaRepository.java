@@ -1,4 +1,4 @@
-package org.example.movietime.exceptionHandler.repositories;
+package org.example.movietime.repositories;
 
 import org.example.movietime.entities.Regista;
 import org.springframework.data.jpa.repository.JpaRepository;

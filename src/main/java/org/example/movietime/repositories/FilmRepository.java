@@ -1,4 +1,4 @@
-package org.example.movietime.exceptionHandler.repositories;
+package org.example.movietime.repositories;
 
 import org.example.movietime.entities.Film;
 import jakarta.persistence.LockModeType;

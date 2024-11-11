@@ -21,7 +21,6 @@ public class OrdineMapper {
                 //todo: gestire i dto
                 null,
                 null,
-                null,
                 null
         );
     }
@@ -30,10 +29,6 @@ public class OrdineMapper {
         if (ordine == null) {
             return null;
         }
-
-        List<DettaglioOrdineDTO> dettagliOrdiniDTO = ordine.getDettagliOrdini().stream()
-                .map(DettaglioOrdineMapper::toDTO)
-                .toList();
 
         return new OrdineDTO(
                 ordine.getIdOrdine(),

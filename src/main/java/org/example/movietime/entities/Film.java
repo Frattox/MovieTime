@@ -41,7 +41,7 @@ public class Film {
     private long versione;
 
     //RELAZIONI
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_regista", referencedColumnName = "id_regista", nullable = false)
     private Regista regista;
 
