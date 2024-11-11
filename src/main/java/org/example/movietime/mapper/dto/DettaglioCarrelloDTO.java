@@ -1,4 +1,4 @@
-package org.example.movietime.dto;
+package org.example.movietime.mapper.dto;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;

@@ -1,6 +1,6 @@
 package org.example.movietime.mapper;
 
-import org.example.movietime.dto.ClienteDTO;
+import org.example.movietime.mapper.dto.ClienteDTO;
 import org.example.movietime.entities.Cliente;
 
 public class ClienteMapper {

@@ -1,4 +1,4 @@
-package org.example.movietime.dto;
+package org.example.movietime.mapper.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,8 +24,4 @@ public class OrdineDTO {
 
     @NotBlank(message = "L'indirizzo non può essere vuoto")
     private String indirizzo;
-
-    private int clienteId; // ID del cliente associato all'ordine
-    private int carrelloId; // ID del carrello associato all'ordine
-    private int metodoPagamentoId; // ID del metodo di pagamento associato all'ordine
 }

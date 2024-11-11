@@ -1,6 +1,7 @@
 package org.example.movietime.controllers;
 
-import org.example.movietime.dto.CarrelloDTO;
+import org.example.movietime.mapper.dto.CarrelloDTO;
+import org.example.movietime.mapper.dto.OrdineDTO;
 import org.example.movietime.exceptions.*;
 import org.example.movietime.services.OrdineService;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,7 @@ public class OrdineController {
         this.ordineService = ordineService;
     }
 
-    @PostMapping("/acquista")
+    @PostMapping("/acquistaDalCarrello")
     public ResponseEntity<String> acquistaDalCarrello(
             @RequestParam int idCliente,
             @RequestParam String indirizzo,
@@ -50,4 +51,58 @@ public class OrdineController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @PostMapping("/acquistaFilm")
+    public ResponseEntity<String> acquistaFilm(
+            @RequestParam int idCliente,
+            @RequestParam int idFilm,
+            @RequestParam int quantity,
+            @RequestParam String indirizzo,
+            @RequestParam int idMetodoDiPagamento) {
+
+        try {
+            ordineService.acquistaFilm(idCliente, idFilm, quantity, indirizzo, idMetodoDiPagamento);
+            return ResponseEntity.ok("Ordine creato con successo");
+        } catch (ClienteNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente non trovato");
+        } catch (FilmNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Film non trovato");
+        } catch (FilmWornOutException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quantità di film non disponibile");
+        } catch (CarrelloNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Carrello non trovato");
+        } catch (MetodoDiPagamentoNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Metodo di pagamento non trovato");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore nell'elaborazione dell'ordine");
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<OrdineDTO>> getOrdiniPaged(
+            @RequestParam int idCliente,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "") String order) {
+        try {
+            List<OrdineDTO> ordini = ordineService.getAllOrdiniPaged(idCliente, pageNumber, order);
+            return ResponseEntity.ok(ordini);
+        } catch (ClienteNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+
+    @GetMapping("/singolo")
+    public ResponseEntity<OrdineDTO> getSingleOrdine(
+            @RequestParam int idOrdine,
+            @RequestParam int idCliente
+    ) {
+        try {
+            OrdineDTO ordineDTO = ordineService.getSingleOrdine(idOrdine, idCliente);
+            return ResponseEntity.ok(ordineDTO);
+        } catch (OrdineNotFoundException | ClienteNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
 }

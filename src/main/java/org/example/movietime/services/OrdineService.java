@@ -1,9 +1,7 @@
 package org.example.movietime.services;
 
-import org.example.movietime.dto.CarrelloDTO;
-import org.example.movietime.dto.DettaglioCarrelloDTO;
-import org.example.movietime.dto.MetodoPagamentoDTO;
-import org.example.movietime.dto.OrdineDTO;
+import org.example.movietime.mapper.dto.CarrelloDTO;
+import org.example.movietime.mapper.dto.OrdineDTO;
 import org.example.movietime.exceptions.*;
 import org.example.movietime.mapper.OrdineMapper;
 import org.example.movietime.entities.*;
@@ -81,14 +79,13 @@ public class OrdineService {
 
         //creo il nuovo ordine
         Ordine ordine = new Ordine();
-        ordine.setCliente(cliente);
         ordine.setMetodoPagamento(metodoPagamento);
         ordine.setCarrello(carrello);
         ordine.setIndirizzo(indirizzo);
         ordine.setStato("Preparazione");
         ordine.setDataOrdine(LocalDateTime.now());
 
-        aggiornaOrdine(ordine,dettagliCarrello, idDettagliCarrello, cliente);
+        aggiornaOrdine(ordine,dettagliCarrello, idDettagliCarrello);
     }
 
     private void controllaDettagliCarrello(
@@ -113,8 +110,7 @@ public class OrdineService {
     protected void aggiornaOrdine(
             Ordine ordine,
             List<DettaglioCarrello> dettagliCarrello,
-            List<Integer> idDettagliCarrello,
-            Cliente cliente
+            List<Integer> idDettagliCarrello
         ) throws FilmWornOutException, FilmNotFoundException, ClienteNotFoundException, CarrelloNotFoundException, MetodoDiPagamentoNotFoundException {
         List<DettaglioOrdine> dettagliOrdine = new LinkedList<>();
         Map<Film,Integer> films = new HashMap<>();
@@ -142,7 +138,6 @@ public class OrdineService {
 
         dettaglioCarrelloRepository.deleteAllById(idDettagliCarrello);
 
-        ordine.setCliente(clienteRepository.findById(ordine.getCliente().getIdCliente()).orElseThrow(ClienteNotFoundException::new));
         ordine.setCarrello(carrelloRepository.findById(ordine.getCarrello().getIdCarrello()).orElseThrow(CarrelloNotFoundException::new));
         ordine.setMetodoPagamento(metodoPagamentoRepository.findById(ordine.getMetodoPagamento().getIdMetodoPagamento()).orElseThrow(MetodoDiPagamentoNotFoundException::new));
         ordineRepository.save(ordine);
@@ -156,7 +151,6 @@ public class OrdineService {
             f = filmRepository.findByIdWithLock(f.getIdFilm()).orElseThrow(FilmNotFoundException::new);
             f.setQuantita(newQuantity);
         }
-
         filmRepository.saveAll(films.keySet());
     }
 
@@ -173,13 +167,11 @@ public class OrdineService {
             int quantity,
             String indirizzo,
             int idMetodoDiPagamento)
-            throws ClienteNotFoundException,
-            FilmNotFoundException, FilmWornOutException, CarrelloNotFoundException, MetodoDiPagamentoNotFoundException {
-        Cliente cliente = clienteRepository.findById(idCliente)
-                .orElseThrow(ClienteNotFoundException::new);
+            throws FilmNotFoundException, FilmWornOutException, CarrelloNotFoundException, MetodoDiPagamentoNotFoundException, ClienteNotFoundException {
 
         //recupero il film
         Film film = filmRepository.findById(idFilm).orElseThrow(FilmNotFoundException::new);
+
         //verifico che sia disponibile la quantità richiesta
         if(Utils.isQuantityNotOk(film, quantity)) throw new FilmWornOutException();
 
@@ -193,7 +185,6 @@ public class OrdineService {
         //genero l'ordine
         Ordine ordine = new Ordine();
         ordine.setStato("Preparazione");
-        ordine.setCliente(cliente);
         ordine.setMetodoPagamento(metodoPagamento);
         ordine.setIndirizzo(indirizzo);
         ordine.setCarrello(carrello);
@@ -206,60 +197,50 @@ public class OrdineService {
         dettaglioOrdine.setQuantita(quantity);
         dettaglioOrdine.setPrezzoUnita(film.getPrezzo());
 
+        film.setQuantita(film.getQuantita()-quantity);
+        filmRepository.save(film);
+
         metodoPagamentoRepository.save(metodoPagamento);
         ordineRepository.save(ordine);
         dettaglioOrdineRepository.save(dettaglioOrdine);
     }
 
-    @Transactional(readOnly = true)
-    public List<OrdineDTO> getAllOrdiniPaged(int pageNumber){
-        Pageable pageable = PageRequest.of(pageNumber,20);
-        Page<Ordine> page = ordineRepository.findAll(pageable);
-        if(page.isEmpty())
-            return new ArrayList<>();
-        return page.getContent()
-                .stream()
-                .map(OrdineMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
     //Dalla lista di ordini effettuati, si clicca uno in particolare
     @Transactional(readOnly = true)
-    public OrdineDTO getSingleOrdine(int idOrdine) throws OrdineNotFoundException {
+    public OrdineDTO getSingleOrdine(
+            int idOrdine,
+            int idCliente
+    ) throws OrdineNotFoundException, ClienteNotFoundException {
+        clienteRepository.findById(idCliente).orElseThrow(ClienteNotFoundException::new);
         return OrdineMapper.toDTO(
                 ordineRepository
-                        .findById(idOrdine)
+                        .findByIdAndCliente(idOrdine,idCliente)
                         .orElseThrow(OrdineNotFoundException::new)
         );
     }
 
     @Transactional(readOnly = true)
-    public List<OrdineDTO> getOrdiniOrderedByDataAscPaged(int idCliente, int pageNumber){
-        Page<Ordine> page = ordineRepository.findAllOrderByDataAsc(idCliente, PageRequest.of(pageNumber,20));
-        if(page.isEmpty())
+    public List<OrdineDTO> getAllOrdiniPaged(
+            int idCliente,
+            int pageNumber,
+            String order) throws ClienteNotFoundException {
+        Page<Ordine> page;
+        clienteRepository.findById(idCliente).orElseThrow(ClienteNotFoundException::new);
+        Pageable pageable = PageRequest.of(pageNumber, 20);
+
+        if ("asc".equalsIgnoreCase(order)) {
+            page = ordineRepository.findAllOrderByDataAsc(idCliente, pageable);
+        } else if ("desc".equalsIgnoreCase(order)) {
+            page = ordineRepository.findAllOrderByDataDesc(idCliente, pageable);
+        } else {
+            page = ordineRepository.findAllByCliente(idCliente,pageable);
+        }
+
+        if (page.isEmpty()) {
             return new ArrayList<>();
+        }
         return OrdineMapper.toDTOList(page.getContent());
     }
 
-    @Transactional(readOnly = true)
-    public List<OrdineDTO> getOrdiniOrderedByDataDescPaged(int idCliente, int pageNumber){
-        Page<Ordine> page = ordineRepository.findAllOrderByDataDesc(idCliente, PageRequest.of(pageNumber,20));
-        if(page.isEmpty())
-            return new ArrayList<>();
-        return OrdineMapper.toDTOList(page.getContent());
-    }
 
-    @Transactional(readOnly = true)
-    public List<OrdineDTO> getOrdiniBetween(int idCliente, LocalDateTime min, LocalDateTime max, int pageNumber) throws ClienteNotFoundException {
-        Page<Ordine> page = ordineRepository
-                .findByClienteAndDataOrdineBetween(
-                        clienteRepository.findById(idCliente).orElseThrow(ClienteNotFoundException::new)
-                        ,min
-                        ,max
-                        ,PageRequest.of(pageNumber,20)
-                );
-        if(page.isEmpty())
-            return new ArrayList<>();
-        return OrdineMapper.toDTOList(page.getContent());
-    }
 }

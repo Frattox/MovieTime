@@ -1,7 +1,6 @@
 package org.example.movietime.mapper;
 
-import org.example.movietime.dto.DettaglioOrdineDTO;
-import org.example.movietime.dto.OrdineDTO;
+import org.example.movietime.mapper.dto.OrdineDTO;
 import org.example.movietime.entities.Ordine;
 
 import java.util.List;
@@ -20,7 +19,6 @@ public class OrdineMapper {
                 dto.getIndirizzo(),
                 //todo: gestire i dto
                 null,
-                null,
                 null
         );
     }
@@ -34,10 +32,7 @@ public class OrdineMapper {
                 ordine.getIdOrdine(),
                 ordine.getDataOrdine(),
                 ordine.getStato(),
-                ordine.getIndirizzo(),
-                ordine.getCliente() != null ? ordine.getCliente().getIdCliente() : 0,
-                ordine.getCarrello() != null ? ordine.getCarrello().getIdCarrello() : 0,
-                ordine.getMetodoPagamento() != null ? ordine.getMetodoPagamento().getIdMetodoPagamento() : 0
+                ordine.getIndirizzo()
         );
     }
 

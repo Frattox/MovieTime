@@ -1,4 +1,4 @@
-package org.example.movietime.dto;
+package org.example.movietime.mapper.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

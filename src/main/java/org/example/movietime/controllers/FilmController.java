@@ -1,6 +1,6 @@
 package org.example.movietime.controllers;
 
-import org.example.movietime.dto.FilmDTO;
+import org.example.movietime.mapper.dto.FilmDTO;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;

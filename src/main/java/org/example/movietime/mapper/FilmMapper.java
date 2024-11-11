@@ -1,6 +1,6 @@
 package org.example.movietime.mapper;
 
-import org.example.movietime.dto.FilmDTO;
+import org.example.movietime.mapper.dto.FilmDTO;
 import org.example.movietime.entities.Film;
 
 public class FilmMapper {

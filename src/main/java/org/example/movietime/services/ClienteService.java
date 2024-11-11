@@ -1,7 +1,7 @@
 package org.example.movietime.services;
 
-import org.example.movietime.dto.ClienteDTO;
-import org.example.movietime.dto.MetodoPagamentoDTO;
+import org.example.movietime.mapper.dto.ClienteDTO;
+import org.example.movietime.mapper.dto.MetodoPagamentoDTO;
 import org.example.movietime.entities.Cliente;
 import org.example.movietime.mapper.ClienteMapper;
 import org.example.movietime.mapper.MetodoPagamentoMapper;

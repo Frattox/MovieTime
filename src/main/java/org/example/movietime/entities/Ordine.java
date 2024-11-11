@@ -30,11 +30,6 @@ public class Ordine {
     @Column(name = "indirizzo", nullable = false, length = -1)
     private String indirizzo;
 
-    //RELAZIONI
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "id_cliente", nullable = false)
-    private Cliente cliente;
-
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_carrello", nullable = false)
     private Carrello carrello;
