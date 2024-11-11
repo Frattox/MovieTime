@@ -1,4 +1,4 @@
-package org.example.movietime.mapper.dto;
+package org.example.movietime.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -27,10 +27,6 @@ public class ClienteDTO {
     @Email(message = "Deve essere un'email valida")
     @Size(max = 100, message = "L'email non può superare i 100 caratteri")
     private String email;
-
-    @NotBlank(message = "La password non può essere vuota")
-    @Size(min = 8, max = 100, message = "La password deve avere tra 8 e 100 caratteri")
-    private String password;
 
     @NotNull(message = "La data di registrazione non può essere null")
     private Date dataRegistrazione;

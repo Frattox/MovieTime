@@ -1,7 +1,7 @@
 package org.example.movietime.services;
 
-import org.example.movietime.mapper.dto.CarrelloDTO;
-import org.example.movietime.mapper.dto.OrdineDTO;
+import org.example.movietime.dto.CarrelloDTO;
+import org.example.movietime.dto.OrdineDTO;
 import org.example.movietime.exceptions.*;
 import org.example.movietime.mapper.OrdineMapper;
 import org.example.movietime.entities.*;
@@ -16,7 +16,6 @@ import org.example.movietime.util.Utils;
 import java.security.InvalidParameterException;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class OrdineService {

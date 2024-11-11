@@ -1,26 +1,9 @@
 package org.example.movietime.mapper;
 
-import org.example.movietime.mapper.dto.ClienteDTO;
+import org.example.movietime.dto.ClienteDTO;
 import org.example.movietime.entities.Cliente;
 
 public class ClienteMapper {
-
-    // Conversione da ClienteDTO a Cliente (Entity)
-    public static Cliente toEntity(ClienteDTO clienteDTO) {
-        if (clienteDTO == null) {
-            return null;
-        }
-
-        // Usando il costruttore con tutti i parametri per l'entità Cliente
-        return new Cliente(
-                clienteDTO.getIdCliente(),
-                clienteDTO.getNome(),
-                clienteDTO.getCognome(),
-                clienteDTO.getEmail(),
-                clienteDTO.getPassword(),
-                clienteDTO.getDataRegistrazione()
-        );
-    }
 
     // Conversione da Cliente (Entity) a ClienteDTO
     public static ClienteDTO toDTO(Cliente cliente) {
@@ -34,7 +17,6 @@ public class ClienteMapper {
                 cliente.getNome(),
                 cliente.getCognome(),
                 cliente.getEmail(),
-                cliente.getPassword(),
                 cliente.getDataRegistrazione()
         );
     }

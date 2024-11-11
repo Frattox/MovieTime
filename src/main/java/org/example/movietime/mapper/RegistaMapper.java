@@ -1,6 +1,6 @@
 package org.example.movietime.mapper;
 
-import org.example.movietime.mapper.dto.RegistaDTO;
+import org.example.movietime.dto.RegistaDTO;
 import org.example.movietime.entities.Regista;
 
 public class RegistaMapper {

@@ -1,7 +1,7 @@
 package org.example.movietime.controllers;
 
-import org.example.movietime.mapper.dto.CarrelloDTO;
-import org.example.movietime.mapper.dto.OrdineDTO;
+import org.example.movietime.dto.CarrelloDTO;
+import org.example.movietime.dto.OrdineDTO;
 import org.example.movietime.exceptions.*;
 import org.example.movietime.services.OrdineService;
 import org.springframework.http.HttpStatus;

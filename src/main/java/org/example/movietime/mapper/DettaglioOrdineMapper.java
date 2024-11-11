@@ -1,6 +1,6 @@
 package org.example.movietime.mapper;
 
-import org.example.movietime.mapper.dto.DettaglioOrdineDTO;
+import org.example.movietime.dto.DettaglioOrdineDTO;
 import org.example.movietime.entities.DettaglioOrdine;
 import org.example.movietime.entities.Film;
 

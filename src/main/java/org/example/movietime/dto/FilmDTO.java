@@ -1,4 +1,4 @@
-package org.example.movietime.mapper.dto;
+package org.example.movietime.dto;
 
 import org.example.movietime.entities.Regista;
 import jakarta.validation.constraints.*;
