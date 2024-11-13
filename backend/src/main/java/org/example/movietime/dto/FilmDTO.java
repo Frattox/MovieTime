@@ -37,9 +37,6 @@ public class FilmDTO{
     @Min(value = 0, message = "La quantità non può essere negativa")
     private int quantita;
 
-    @Min(value = 0, message = "La versione deve essere positiva")
-    private long versione;
-
     @NotNull(message = "Il regista non può essere null")
     private Regista regista;
 }

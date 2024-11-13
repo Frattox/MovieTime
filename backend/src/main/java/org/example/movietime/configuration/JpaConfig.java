@@ -1,4 +1,4 @@
-package org.example.movietime;
+package org.example.movietime.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

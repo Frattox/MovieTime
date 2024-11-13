@@ -35,11 +35,6 @@ public class Film {
     @Column(name = "quantita", nullable = false, precision = 0)
     private int quantita;
 
-    @Version
-    @Basic
-    @Column(name = "versione", nullable = false, precision = 0)
-    private long versione;
-
     //RELAZIONI
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_regista", referencedColumnName = "id_regista", nullable = false)

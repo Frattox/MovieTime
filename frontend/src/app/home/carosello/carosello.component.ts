@@ -42,6 +42,7 @@ export class CaroselloComponent implements OnInit{
 
   selectFilm(film: Film): void {
     this.filmService.setSelectedFilm(film);
+    console.log(film);
     this.router.navigate(['/film', film.id_film]);
   }
 
