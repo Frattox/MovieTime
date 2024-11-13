@@ -37,6 +37,8 @@ public class FilmDTO{
     @Min(value = 0, message = "La quantità non può essere negativa")
     private int quantita;
 
+    private String immagine;
+
     @NotNull(message = "Il regista non può essere null")
     private Regista regista;
 }

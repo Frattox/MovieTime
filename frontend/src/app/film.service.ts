@@ -1,6 +1,6 @@
 // film.service.ts
 import { Injectable } from '@angular/core';
-import { Film } from './carosello.component';
+import { Film } from './home/carosello/carosello.component';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 

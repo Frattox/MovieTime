@@ -17,6 +17,7 @@ public class FilmMapper {
                 filmDTO.getFormato(),
                 filmDTO.getPrezzo(),
                 filmDTO.getQuantita(),
+                filmDTO.getImmagine(),
                 filmDTO.getRegista()
         );
     }
@@ -34,6 +35,7 @@ public class FilmMapper {
                 film.getFormato(),
                 film.getPrezzo(),
                 film.getQuantita(),
+                film.getImmagine(),
                 film.getRegista()
         );
     }

@@ -3,18 +3,26 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CarouselModule } from 'primeng/carousel';
 import { Router, RouterModule } from '@angular/router';
-import { FilmService } from './film.service';
+import { FilmService } from '../../film.service';
 
 export interface Film {
-  id_film: number;
-  id_regista: number;
+  idFilm: number;
+  regista: Regista;
   titolo: string;
-  anno_uscita: number;
+  annoUscita: number;
   genere: string;
   formato: string;
   prezzo: number;
   quantita: number;
   immagine: string;
+}
+
+export interface Regista{
+  idRegista: string;
+  nome: string;
+  cognome: string;
+  dataN: Date;
+  nazionalita: string;
 }
 
 @Component({
@@ -36,15 +44,16 @@ export class CaroselloComponent implements OnInit{
 
   ngOnInit(): void {
     this.filmService.getFilms().subscribe((films) => {
-      this.films = films;
+      this.films = films.map(film => ({
+        ...film,
+        immagine: `assets/img/${film.immagine}`
+      }));
     });
   }
 
   selectFilm(film: Film): void {
     this.filmService.setSelectedFilm(film);
     console.log(film);
-    this.router.navigate(['/film', film.id_film]);
-  }
-
-  
+    this.router.navigate(['film', film.idFilm]);
+  }  
 }

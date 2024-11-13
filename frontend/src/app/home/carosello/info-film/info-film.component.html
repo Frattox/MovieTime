@@ -1,6 +1,6 @@
 <div *ngIf="film">
     <h2>{{ film.titolo }}</h2>
     <img [src]="film.immagine" [alt]="film.titolo" class="film-image" />
-    <p><strong>Regista:</strong> {{ film.id_regista }}</p>
+    <p><strong>Regista:</strong> {{ film.regista.nome }} {{ film.regista.cognome }}</p>
     <p><strong>Prezzo:</strong> {{ film.prezzo | currency }}</p>
-  </div>  
+  </div>

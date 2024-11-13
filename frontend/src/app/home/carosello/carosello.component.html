@@ -5,16 +5,13 @@
     [circular]="true"
     [autoplayInterval]="3000">
       <ng-template pTemplate="item" let-film>
-        <div class="film-item" (click)="selectFilm(film)" routerLink="/film/{{film.id}}">
+        <div class="film-item" (click)="selectFilm(film)" routerLink="/film/{{film.idFilm}}">
           <img [src]="film.immagine" [alt]="film.titolo" class="film-image" />
           <div class="film-info">
             <h3>{{ film.titolo }}</h3>
-            <p>{{ film.regista }}</p>
+            <p>{{ film.regista.nome }} {{ film.regista.cognome}}</p>
             <p>{{ film.prezzo | currency }}</p>
           </div>
-        </div>
-        <div (click)="selectFilm(film)">
-          <a href="javascript:void(0)" (click)="selectFilm(film);">Dettagli</a>
         </div>
       </ng-template>
     </p-carousel>

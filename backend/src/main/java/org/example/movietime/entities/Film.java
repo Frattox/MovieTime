@@ -34,6 +34,9 @@ public class Film {
     @Basic
     @Column(name = "quantita", nullable = false, precision = 0)
     private int quantita;
+    @Basic
+    @Column(name = "immagine", nullable = false, precision = 0)
+    private String immagine;
 
     //RELAZIONI
     @ManyToOne(cascade = CascadeType.PERSIST)

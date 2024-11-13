@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FilmService } from '../film.service';
+import { FilmService } from '../../../film.service';
 import {Film} from '../carosello.component';
 
 @Component({
