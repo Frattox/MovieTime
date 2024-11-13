@@ -1,0 +1,16 @@
+.film {
+  text-align: center;
+  padding: 1rem;
+}
+
+.film-image {
+  width: 100%;
+  height: auto;
+  max-width: 200px;
+  margin-bottom: 0.5rem;
+}
+
+.film h3 {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
