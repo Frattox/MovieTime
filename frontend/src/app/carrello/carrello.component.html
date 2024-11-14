@@ -1,12 +1,11 @@
 <mat-list role="list">
-    @for (dettaglioCarrello of getDettagliCarrello(); track dettaglioCarrello.idDettaglioCarrello) {
+    @for (dettaglioCarrello of dettagliCarrello; track dettaglioCarrello.idDettaglioCarrello) {
         <mat-list-item role="listitem">
             <div>
-                <p>ID Dettaglio: {{ dettaglioCarrello.idDettaglioCarrello }}</p>
+                <img [src]="dettagliFilm[dettaglioCarrello.filmId].immagine" [alt]="dettagliFilm[dettaglioCarrello.filmId].titolo" class="film-image" />
+                <p>Titolo: {{ dettagliFilm[dettaglioCarrello.filmId].titolo }}</p>
                 <p>Quantità: {{ dettaglioCarrello.quantita }}</p>
                 <p>Prezzo Unità: {{ dettaglioCarrello.prezzoUnita | currency }}</p>
-                <p>ID Carrello: {{ dettaglioCarrello.carrelloId }}</p>
-                <p>ID Film: {{ dettaglioCarrello.filmId }}</p>
               </div>
         </mat-list-item>
     } @empty {

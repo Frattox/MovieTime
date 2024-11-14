@@ -38,6 +38,11 @@ export class FilmService {
     return this.http.get<Film[]>(`${FilmService.apiUrl}/film`);
   }
 
+  getFilmById(idFilm: number): Observable<Film> {
+    return this.http.get<Film>(`${FilmService.apiUrl}/film/${idFilm}`);
+  }
+
+
   setSelectedFilm(film: Film): void {
     this.selectedFilm = film;
   }

@@ -4,9 +4,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface DettaglioCarrello {
+  idDettaglioCarrello: number;
   carrelloId: number;
   filmId: number;
-  idDettaglioCarrello: number;
   prezzoUnita: number; 
   quantita: number;
 }
@@ -23,7 +23,6 @@ export class CarrelloService {
   constructor(private http: HttpClient) {}
 
   getDettagliCarrello(idCliente: number, pageNumber: number = 0, sortBy: string, order: string): Observable<DettaglioCarrello[]> {
-    console.log(this.apiUrl);
     return this.http.get<DettaglioCarrello[]>(
       `${this.apiUrl}/dettagli-carrello`, {
         params: {
