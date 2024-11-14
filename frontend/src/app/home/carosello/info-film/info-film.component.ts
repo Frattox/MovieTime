@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FilmService } from '../../../film.service';
-import {Film} from '../carosello.component';
+import { FilmService } from '../../../services/film.service';
+import { Film } from '../../../services/film.service';
 
 @Component({
   selector: 'app-info-film',

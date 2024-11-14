@@ -1,7 +1,7 @@
 package org.example.movietime.controllers;
 
 import org.example.movietime.exceptions.ClienteNotFoundException;
-import org.example.movietime.dto.ClienteDTO;
+import org.example.movietime.exceptionHandler.dto.ClienteDTO;
 import org.example.movietime.services.ClienteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

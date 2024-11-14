@@ -1,6 +1,6 @@
 package org.example.movietime.services;
 
-import org.example.movietime.dto.FilmDTO;
+import org.example.movietime.exceptionHandler.dto.FilmDTO;
 import org.example.movietime.entities.Film;
 import org.example.movietime.mapper.FilmMapper;
 import org.springframework.data.domain.Page;

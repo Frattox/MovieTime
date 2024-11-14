@@ -1,6 +1,6 @@
 package org.example.movietime.mapper;
 
-import org.example.movietime.dto.DettaglioOrdineDTO;
+import org.example.movietime.exceptionHandler.dto.DettaglioOrdineDTO;
 import org.example.movietime.entities.DettaglioOrdine;
 import org.example.movietime.entities.Film;
 
@@ -28,7 +28,7 @@ public class DettaglioOrdineMapper {
                 dettaglioOrdine.getIdDettaglioOrdine(),
                 dettaglioOrdine.getQuantita(),
                 dettaglioOrdine.getPrezzoUnita(),
-                dettaglioOrdine.getFilm() != null ? dettaglioOrdine.getFilm().getIdFilm() : 0 // Recupera l'ID del film
+                dettaglioOrdine.getFilm().getIdFilm() > 0 ? dettaglioOrdine.getFilm().getIdFilm() : 0
         );
     }
 }

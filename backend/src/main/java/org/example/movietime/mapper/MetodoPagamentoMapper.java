@@ -1,6 +1,6 @@
 package org.example.movietime.mapper;
 
-import org.example.movietime.dto.MetodoPagamentoDTO;
+import org.example.movietime.exceptionHandler.dto.MetodoPagamentoDTO;
 import org.example.movietime.entities.MetodoPagamento;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package org.example.movietime.controllers;
 
-import org.example.movietime.dto.DettaglioCarrelloDTO;
+import org.example.movietime.exceptionHandler.dto.DettaglioCarrelloDTO;
 import org.example.movietime.exceptions.*;
 import org.example.movietime.services.CarrelloService;
 import org.springframework.http.HttpStatus;
@@ -50,11 +50,10 @@ public class CarrelloController {
     @PostMapping("/aggiungi")
     public ResponseEntity<String> aggiungiAlCarrello(
             @RequestParam int idCliente,
-            @RequestParam String titolo,
-            @RequestParam String formato,
+            @RequestParam int idFilm,
             @RequestParam int quantity) {
         try {
-            carrelloService.aggiungiAlCarrello(idCliente, titolo, formato, quantity);
+            carrelloService.aggiungiAlCarrello(idCliente, idFilm, quantity);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (FilmWornOutException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Film non disponibile in quantità richiesta");

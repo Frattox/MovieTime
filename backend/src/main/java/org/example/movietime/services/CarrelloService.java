@@ -3,7 +3,7 @@ package org.example.movietime.services;
 
 //La classe servirà per gestire le operazioni per il carrello
 
-import org.example.movietime.dto.DettaglioCarrelloDTO;
+import org.example.movietime.exceptionHandler.dto.DettaglioCarrelloDTO;
 import org.example.movietime.entities.Carrello;
 import org.example.movietime.entities.DettaglioCarrello;
 import org.example.movietime.entities.Film;
@@ -45,13 +45,13 @@ public class CarrelloService {
 
 
     @Transactional
-    public void aggiungiAlCarrello(int idCliente, String titolo, String formato, int quantity)
+    public void aggiungiAlCarrello(int idCliente, int idFilm, int quantity)
             throws FilmWornOutException, FilmNotFoundException, ClienteNotFoundException, CarrelloNotFoundException {
         //verifica che la quantità sia positiva
         if(quantity <= 0) throw new InvalidParameterException();
 
         //prendo il film dalla repository
-        Film film = filmRepository.findByTitoloAndFormato(titolo, formato).orElseThrow(FilmNotFoundException::new);
+        Film film = filmRepository.findByIdWithLock(idFilm).orElseThrow(FilmNotFoundException::new);
 
         //verifica della disponibilità del film
         if(Utils.isQuantityNotOk(film, quantity))throw new FilmWornOutException();

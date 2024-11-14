@@ -3,27 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CarouselModule } from 'primeng/carousel';
 import { Router, RouterModule } from '@angular/router';
-import { FilmService } from '../../film.service';
-
-export interface Film {
-  idFilm: number;
-  regista: Regista;
-  titolo: string;
-  annoUscita: number;
-  genere: string;
-  formato: string;
-  prezzo: number;
-  quantita: number;
-  immagine: string;
-}
-
-export interface Regista{
-  idRegista: string;
-  nome: string;
-  cognome: string;
-  dataN: Date;
-  nazionalita: string;
-}
+import { Film } from '../../services/film.service';
+import { FilmService } from '../../services/film.service';
 
 @Component({
   selector: 'app-carosello',

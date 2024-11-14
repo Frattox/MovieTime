@@ -1,6 +1,6 @@
 package org.example.movietime.mapper;
 
-import org.example.movietime.dto.FilmDTO;
+import org.example.movietime.exceptionHandler.dto.FilmDTO;
 import org.example.movietime.entities.Film;
 
 public class FilmMapper {
@@ -18,7 +18,7 @@ public class FilmMapper {
                 filmDTO.getPrezzo(),
                 filmDTO.getQuantita(),
                 filmDTO.getImmagine(),
-                filmDTO.getRegista()
+                RegistaMapper.toRegista(filmDTO.getRegista())
         );
     }
 
@@ -36,7 +36,7 @@ public class FilmMapper {
                 film.getPrezzo(),
                 film.getQuantita(),
                 film.getImmagine(),
-                film.getRegista()
+                RegistaMapper.toRegistaDTO(film.getRegista())
         );
     }
 }

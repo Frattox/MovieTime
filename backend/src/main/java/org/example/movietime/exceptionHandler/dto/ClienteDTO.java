@@ -1,4 +1,4 @@
-package org.example.movietime.dto;
+package org.example.movietime.exceptionHandler.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;

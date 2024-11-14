@@ -1,6 +1,5 @@
-package org.example.movietime.dto;
+package org.example.movietime.exceptionHandler.dto;
 
-import org.example.movietime.entities.Regista;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,5 +39,5 @@ public class FilmDTO{
     private String immagine;
 
     @NotNull(message = "Il regista non può essere null")
-    private Regista regista;
+    private RegistaDTO regista;
 }

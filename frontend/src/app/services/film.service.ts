@@ -1,22 +1,41 @@
 // film.service.ts
 import { Injectable } from '@angular/core';
-import { Film } from './home/carosello/carosello.component';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
+export interface Film {
+  idFilm: number;
+  regista: Regista;
+  titolo: string;
+  annoUscita: number;
+  genere: string;
+  formato: string;
+  prezzo: number;
+  quantita: number;
+  immagine: string;
+}
+
+export interface Regista{
+  idRegista: string;
+  nome: string;
+  cognome: string;
+  dataN: Date;
+  nazionalita: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class FilmService {
 
-  private apiUrl = 'http://localhost:8080';
+  public static apiUrl = 'http://localhost:8080';
 
   private selectedFilm: Film | null = null;
 
   constructor(private http: HttpClient) {}
 
   getFilms(): Observable<Film[]> {
-    return this.http.get<Film[]>(`${this.apiUrl}/film`);
+    return this.http.get<Film[]>(`${FilmService.apiUrl}/film`);
   }
 
   setSelectedFilm(film: Film): void {
