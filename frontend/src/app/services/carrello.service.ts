@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FilmService } from './film.service';
+import { Film, FilmService } from './film.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -22,14 +22,14 @@ export class CarrelloService {
 
   constructor(private http: HttpClient) {}
 
-  getDettagliCarrello(idCliente: number, pageNumber: number = 0, sortBy: string, order: string): Observable<DettaglioCarrello[]> {
+  getDettagliCarrello(idC: number, pageNumber: number = 0, s: string, o: string): Observable<DettaglioCarrello[]> {
     return this.http.get<DettaglioCarrello[]>(
       `${this.apiUrl}/dettagli-carrello`, {
         params: {
-          idCliente: idCliente,
+          idCliente: idC,
           p: pageNumber,
-          sortBy: sortBy,
-          order: order
+          sortBy: s,
+          order: o
         }
       });
   }
@@ -41,4 +41,20 @@ export class CarrelloService {
   getSelectedDettaglio(): DettaglioCarrello | null {
     return this.selectedDettaglioCarrello;
   }
+
+  aggiungiAlCarrello(idCliente: number, idFilm: number, quantity: number): Observable<string> {
+    return this.http.post<string>(
+      `${this.apiUrl}/aggiungi`, 
+      null,
+      {
+        params: {
+          idCliente: idCliente,
+          idFilm: idFilm,
+          quantity: quantity
+        }
+      }
+    );
+  }
+  
+  
 }

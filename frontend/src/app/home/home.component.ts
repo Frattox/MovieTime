@@ -5,7 +5,7 @@ import { CaroselloComponent } from "./carosello/carosello.component";
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [NavigationBarComponent, CaroselloComponent],
+  imports: [CaroselloComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
