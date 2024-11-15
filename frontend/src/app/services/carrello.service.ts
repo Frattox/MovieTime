@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Film, FilmService } from './film.service';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, EMPTY  } from 'rxjs';
 
 export interface DettaglioCarrello {
   idDettaglioCarrello: number;
@@ -42,19 +42,23 @@ export class CarrelloService {
     return this.selectedDettaglioCarrello;
   }
 
-  aggiungiAlCarrello(idCliente: number, idFilm: number, quantity: number): Observable<string> {
-    return this.http.post<string>(
-      `${this.apiUrl}/aggiungi`, 
-      null,
-      {
-        params: {
-          idCliente: idCliente,
-          idFilm: idFilm,
-          quantity: quantity
+  aggiungiAlCarrello(idCliente: number, idFilm: number | undefined, quantity: number): Observable<string> {
+    if(idFilm){
+      return this.http.post<string>(
+        `${this.apiUrl}/aggiungi`, 
+        null,
+        {
+          params: {
+            idCliente: idCliente,
+            idFilm: idFilm,
+            quantity: quantity
+          }
         }
-      }
-    );
+      );
+    }
+    return EMPTY;
   }
+  
   
   
 }

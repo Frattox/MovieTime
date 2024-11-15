@@ -30,15 +30,27 @@ export class OrdiniService {
 
   constructor(private http: HttpClient) {}
 
-  getOrdini(idCliente:number, pageNumber: number = 0, order: string = ''): Observable<Ordine[]>{
+  getOrdini(idC:number, p: number = 0, o: string = ''): Observable<Ordine[]>{
     return this.http.get<Ordine[]>(
       `${this.apiUrl}`, {
         params: {
-          idCliente: idCliente,
-          p: pageNumber,
-          order: order
+          idCliente: idC,
+          pageNumber: p,
+          order: o
         }
       });
+  }
+
+  getDettagliOrdine(idO: number, idC: number, p: number = 0): Observable<DettaglioOrdine[]> {
+    return this.http.get<DettaglioOrdine[]>(
+      `${this.apiUrl}/dettagli-ordine`, {
+        params:{
+          idOrdine: idO,
+          idCliente: idC,
+          pageNumber: p
+        }
+      }
+    );
   }
 
 }

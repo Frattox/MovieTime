@@ -48,7 +48,7 @@ export class CarrelloComponent implements OnInit{
             this.filmService.getFilmById(dettaglio.filmId).subscribe(film => {
               this.dettagliFilm[dettaglio.filmId] = {
                 ...film,
-                immagine: `assets/img/${film.immagine}`
+                immagine: `/assets/img/${film.immagine}`
               };
             });
           });

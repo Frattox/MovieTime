@@ -5,7 +5,7 @@ import { CarouselModule } from 'primeng/carousel';
 import { Router, RouterModule } from '@angular/router';
 import { Film } from '../../services/film.service';
 import { FilmService } from '../../services/film.service';
-import { FilmAcquistabileComponent } from "../../film-acquistabile/film-acquistabile.component";
+import { FilmAcquistabileComponent } from "../film-acquistabile/film-acquistabile.component";
 
 @Component({
   selector: 'app-carosello',

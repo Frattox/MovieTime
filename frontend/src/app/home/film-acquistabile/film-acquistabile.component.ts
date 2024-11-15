@@ -1,14 +1,12 @@
 import { Component, Input, Output, EventEmitter} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {MatIconModule} from '@angular/material/icon';
-import { CarrelloService } from '../services/carrello.service';
+import { CarrelloService } from '../../services/carrello.service';
 
 @Component({
   selector: 'app-film-acquistabile',
   standalone: true,
   imports: [
-    CommonModule,
-    MatIconModule
+    CommonModule
   ],
   templateUrl: './film-acquistabile.component.html',
   styleUrl: './film-acquistabile.component.css'
@@ -39,8 +37,9 @@ export class FilmAcquistabileComponent {
       }
     });
   }
-  
+
   showPopup(message: string): void {
     alert(message);
   }
+  
 }

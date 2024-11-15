@@ -26,5 +26,8 @@ export class NavigationBarComponent {
     return this.idCliente;
   }
 
+  goHome(): void{
+    this.router.navigate([``]);
+  }
 
 }
