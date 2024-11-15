@@ -10,7 +10,7 @@ export const routes: Routes = [
     {path:"film/:idCliente",component:InfoFilmComponent},
     {path:"carrello/:idCliente",component:CarrelloComponent},
     {path:"ordini/:idCliente",component:OrdiniComponent},
-    {path:"ordini/:idCliente/:idDettaglioOrdine",component:InfoOrdineComponent},
+    {path:"ordini/:idCliente/:idOrdine",component:InfoOrdineComponent},
     {path:"profile/:idCliente",component:InfoFilmComponent}
 
 ];

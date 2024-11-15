@@ -53,4 +53,12 @@ export class OrdiniService {
     );
   }
 
+  setSelectedOrdine(ordine: Ordine){
+    this.selectedOrdine = ordine;
+  }
+
+  getSelectedDettaglio(): Ordine | null {
+    return this.selectedOrdine;
+  }
+
 }

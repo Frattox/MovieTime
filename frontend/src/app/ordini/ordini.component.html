@@ -1,1 +1,13 @@
-<p>ordini works!</p>
+<mat-list role="list">
+    @for (ordine of ordini; track ordine.idOrdine) {
+        <mat-list-item role="listitem" (click)="selectOrdine(ordine)">
+            <div>
+                <p>Id: {{ ordine.idOrdine }}</p>
+                <p>Stato: {{ ordine.stato }}</p>
+                <p>Data Ordine: {{ ordine.dataOrdine }}</p>
+            </div>
+        </mat-list-item>
+    } @empty {
+        <p>Non hai mai effettuato ordini</p>
+    }
+</mat-list>

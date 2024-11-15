@@ -22,13 +22,10 @@ export class OrdiniComponent implements OnInit {
 
   idCliente!: number;
   ordini: Ordine[] | null = [];
-  dettagliOrdineSelected: DettaglioOrdine[] | null = [];
-  dettagliFilm: { [id: number]: Film } = {};
 
   constructor(
-    private router: Router,
     private ordiniService: OrdiniService,
-    private filmService: FilmService,
+    private router: Router,
     private route: ActivatedRoute
   ) {}
 
@@ -48,7 +45,8 @@ export class OrdiniComponent implements OnInit {
       });
   }
 
-  loadDettagliOrdini(): void{
-    
+  selectOrdine(ordine: Ordine): void{
+    this.ordiniService.setSelectedOrdine(ordine);
+    this.router.navigate(['ordini', this.idCliente, ordine.idOrdine]);
   }
 }

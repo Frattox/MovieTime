@@ -1,1 +1,14 @@
-<p>info-ordine works!</p>
+<mat-list role="list">
+    @for (dettaglioOrdine of dettagliOrdine; track dettaglioOrdine.idDettaglioOrdine) {
+        <mat-list-item role="listitem">
+            <div>
+                <img [src]="dettagliFilm[dettaglioOrdine.filmId].immagine" [alt]="dettagliFilm[dettaglioOrdine.filmId].titolo" class="film-image" />
+                <p>Titolo: {{ dettagliFilm[dettaglioOrdine.filmId].titolo }}</p>
+                <p>Quantità: {{ dettaglioOrdine.quantita }}</p>
+                <p>Prezzo Unità: {{ dettaglioOrdine.prezzoUnita }}</p>
+            </div>
+        </mat-list-item>
+    } @empty {
+        <p>il carrello è vuoto</p>
+    }
+</mat-list>

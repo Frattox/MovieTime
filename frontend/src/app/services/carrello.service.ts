@@ -34,8 +34,8 @@ export class CarrelloService {
       });
   }
 
-  setSelectedDettaglio(film: DettaglioCarrello): void {
-    this.selectedDettaglioCarrello = film;
+  setSelectedDettaglio(dettaglio: DettaglioCarrello): void {
+    this.selectedDettaglioCarrello = dettaglio;
   }
 
   getSelectedDettaglio(): DettaglioCarrello | null {
