@@ -73,6 +73,8 @@ export class OrdiniService {
     dettagliCarrello: DettaglioCarrello[]
   ): Observable<String>{
 
+    console.log(n);
+
     const carrelloDTO: CarrelloDTO = {
       idDettagliCarrello: dettagliCarrello.map(dettaglio => dettaglio.idDettaglioCarrello),
       quantita: dettagliCarrello.map(dettaglio => dettaglio.quantita),

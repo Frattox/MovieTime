@@ -6,6 +6,7 @@ import {MatIconModule} from '@angular/material/icon';
 import { CarrelloService } from '../../../services/carrello.service';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { FormsModule } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-info-film',
@@ -27,7 +28,8 @@ export class InfoFilmComponent implements OnInit{
 
   constructor(
     private filmService: FilmService,
-    private carrelloService: CarrelloService
+    private carrelloService: CarrelloService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -52,6 +54,6 @@ export class InfoFilmComponent implements OnInit{
   }
 
   showPopup(message: string): void {
-    alert(message);
+    this.snackBar.open(message,'Ok')
   }
 }

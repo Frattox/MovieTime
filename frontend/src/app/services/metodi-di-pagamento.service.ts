@@ -21,6 +21,7 @@ export class MetodiDiPagamentoService {
   constructor(private http: HttpClient) {}
 
   getMetodiPagamento(idC: number): Observable<MetodoDiPagamento[]> {
+    this.selectedMetodoDiPagamento = undefined;
     return this.http.get<MetodoDiPagamento[]>(this.apiUrl, {
       params: {
         idCliente: idC
@@ -44,7 +45,7 @@ export class MetodiDiPagamentoService {
         tipo: this.selectedMetodoDiPagamento!.tipo
       }
     });
-    this.selectedMetodoDiPagamento = undefined;
+    ret.subscribe();
     return ret;
   }
 

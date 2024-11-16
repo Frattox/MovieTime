@@ -38,7 +38,7 @@
     </div>
 </div>
 
-@if (metodiDiPagamento) {
+@if (metodiDiPagamento!.length) {
 <h3 class="form-title">...oppure seleziona un metodo di pagamento esistente</h3>
 }
 <mat-list role="list">
@@ -53,8 +53,6 @@
                 />
               </div>
         </mat-list-item>
-    } @empty {
-        <p>il carrello è vuoto</p>
     }
 </mat-list>
 <div class="ordina" (click)="ordina()">
