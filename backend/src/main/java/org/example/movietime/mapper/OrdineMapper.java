@@ -1,6 +1,6 @@
 package org.example.movietime.mapper;
 
-import org.example.movietime.exceptionHandler.dto.OrdineDTO;
+import org.example.movietime.dto.OrdineDTO;
 import org.example.movietime.entities.Ordine;
 
 import java.util.List;

@@ -1,4 +1,5 @@
-<mat-list role="list">
+<div class="container">
+<mat-list role="list" [ngStyle]="{ 'margin-bottom': '16px' }">
     @for (dettaglioCarrello of dettagliCarrello; track dettaglioCarrello.idDettaglioCarrello) {
         <mat-list-item role="listitem">
             <div>
@@ -12,3 +13,10 @@
         <p>il carrello è vuoto</p>
     }
 </mat-list>
+<div class="totale-container">
+    <h3>Totale: {{ totale | currency }}</h3>
+  </div>
+<div class="actions">
+    <button mat-flat-button (click)="acquistaDalCarrello()">Ordina</button>
+</div>
+</div>

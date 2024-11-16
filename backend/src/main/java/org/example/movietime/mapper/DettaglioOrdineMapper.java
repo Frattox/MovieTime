@@ -1,8 +1,13 @@
 package org.example.movietime.mapper;
 
-import org.example.movietime.exceptionHandler.dto.DettaglioOrdineDTO;
+import org.example.movietime.dto.DettaglioOrdineDTO;
+import org.example.movietime.dto.OrdineDTO;
 import org.example.movietime.entities.DettaglioOrdine;
 import org.example.movietime.entities.Film;
+import org.example.movietime.entities.Ordine;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class DettaglioOrdineMapper {
 
@@ -18,6 +23,15 @@ public class DettaglioOrdineMapper {
                 null,
                 null
         );
+    }
+
+    public static List<DettaglioOrdineDTO> toDTOList(List<DettaglioOrdine> dettagliOrdine) {
+        if (dettagliOrdine == null) {
+            return null;
+        }
+        return dettagliOrdine.stream()
+                .map(DettaglioOrdineMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     public static DettaglioOrdineDTO toDTO(DettaglioOrdine dettaglioOrdine) {

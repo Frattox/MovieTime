@@ -4,6 +4,7 @@ import { InfoFilmComponent } from './home/carosello/info-film/info-film.componen
 import { CarrelloComponent } from './carrello/carrello.component';
 import { OrdiniComponent } from './ordini/ordini.component';
 import { InfoOrdineComponent } from './ordini/info-ordine/info-ordine.component';
+import { PagamentoComponent } from './pagamento/pagamento.component';
 
 export const routes: Routes = [
     {path:"",component:HomeComponent},
@@ -11,7 +12,8 @@ export const routes: Routes = [
     {path:"carrello/:idCliente",component:CarrelloComponent},
     {path:"ordini/:idCliente",component:OrdiniComponent},
     {path:"ordini/:idCliente/:idOrdine",component:InfoOrdineComponent},
-    {path:"profile/:idCliente",component:InfoFilmComponent}
+    {path:"profile/:idCliente",component:InfoFilmComponent},
+    {path:"pagamento/:idCliente",component:PagamentoComponent}
 
 ];
 

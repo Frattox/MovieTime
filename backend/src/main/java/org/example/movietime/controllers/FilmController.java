@@ -1,10 +1,10 @@
 package org.example.movietime.controllers;
 
 import org.example.movietime.exceptions.RegistaNotFoundException;
-import org.example.movietime.exceptionHandler.dto.FilmDTO;
+import org.example.movietime.dto.FilmDTO;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import org.example.movietime.exceptionHandler.dto.RegistaDTO;
+import org.example.movietime.dto.RegistaDTO;
 import org.example.movietime.services.RegistaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

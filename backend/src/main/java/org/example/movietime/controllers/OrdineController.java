@@ -1,7 +1,8 @@
 package org.example.movietime.controllers;
 
-import org.example.movietime.exceptionHandler.dto.CarrelloDTO;
-import org.example.movietime.exceptionHandler.dto.OrdineDTO;
+import org.example.movietime.dto.CarrelloDTO;
+import org.example.movietime.dto.DettaglioOrdineDTO;
+import org.example.movietime.dto.OrdineDTO;
 import org.example.movietime.exceptions.*;
 import org.example.movietime.services.OrdineService;
 import org.springframework.http.HttpStatus;
@@ -105,4 +106,17 @@ public class OrdineController {
         }
     }
 
+    @GetMapping("/dettagli-ordine")
+    public ResponseEntity<List<DettaglioOrdineDTO>> getDettagliOrdine(
+            @RequestParam int idOrdine,
+            @RequestParam int idCliente,
+            @RequestParam(defaultValue = "0") int pageNumber
+    ){
+        try {
+            List<DettaglioOrdineDTO> dettagliOrdine = ordineService.getDettagliOrdine(idOrdine,idCliente, pageNumber);
+            return ResponseEntity.ok(dettagliOrdine);
+        } catch (OrdineNotFoundException | ClienteNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
 }

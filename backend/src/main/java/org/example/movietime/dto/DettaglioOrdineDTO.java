@@ -1,4 +1,4 @@
-package org.example.movietime.exceptionHandler.dto;
+package org.example.movietime.dto;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
@@ -21,5 +21,5 @@ public class DettaglioOrdineDTO {
     private float prezzoUnita;
 
     @Min(value = 1,message = "L'ID del film deve essere valido")
-    private int filmId; // ID del film associato all'ordine
+    private int filmId;
 }

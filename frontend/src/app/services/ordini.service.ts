@@ -26,8 +26,6 @@ export class OrdiniService {
 
   private selectedOrdine : Ordine | null = null;
 
-  private selectedDettaglioOrdine : DettaglioOrdine | null = null;
-
   constructor(private http: HttpClient) {}
 
   getOrdini(idC:number, p: number = 0, o: string = ''): Observable<Ordine[]>{
@@ -60,5 +58,4 @@ export class OrdiniService {
   getSelectedDettaglio(): Ordine | null {
     return this.selectedOrdine;
   }
-
 }

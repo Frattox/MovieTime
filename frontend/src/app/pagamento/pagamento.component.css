@@ -1,0 +1,87 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+    background-color: #f4f6f8;
+}
+
+.form-card {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+}
+
+p-floatLabel {
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+input[pInputText] {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 16px;
+    width: 100%;
+    transition: border-color 0.3s;
+}
+
+input[pInputText]:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+p-floatLabel label {
+    font-size: 14px;
+    color: #6c757d;
+    transition: color 0.3s;
+}
+
+input[pInputText]:focus + label {
+    color: #007bff;
+}
+
+.input-field {
+    display: block;
+    margin-bottom: 27px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.form-title {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+    padding-top: 2em;
+    color: #333;
+}
+
+.ordina{
+    text-align: center;
+    padding-top: 10px;
+}
+p-radioButton {
+    display: inline-block;
+  }
+
+  .metodi-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 3em;
+  }
+  
+  .metodi-list div {
+    margin: 10px 0;
+  }
+  
+  

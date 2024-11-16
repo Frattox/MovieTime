@@ -1,6 +1,6 @@
 package org.example.movietime.mapper;
 
-import org.example.movietime.exceptionHandler.dto.DettaglioCarrelloDTO;
+import org.example.movietime.dto.DettaglioCarrelloDTO;
 import org.example.movietime.entities.DettaglioCarrello;
 
 import java.util.List;

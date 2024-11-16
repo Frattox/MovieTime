@@ -1,6 +1,6 @@
 package org.example.movietime.controllers;
 
-import org.example.movietime.exceptionHandler.dto.DettaglioCarrelloDTO;
+import org.example.movietime.dto.DettaglioCarrelloDTO;
 import org.example.movietime.exceptions.*;
 import org.example.movietime.services.CarrelloService;
 import org.springframework.http.HttpStatus;

@@ -5,6 +5,7 @@ import { ActivatedRoute, RouterModule , Router} from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Film, FilmService } from '../services/film.service';
 import {MatIconModule} from '@angular/material/icon';
+import {MatButtonModule} from '@angular/material/button';
 
 @Component({
   selector: 'app-carrello',
@@ -13,7 +14,8 @@ import {MatIconModule} from '@angular/material/icon';
     MatListModule,
     CommonModule,
     RouterModule,
-    MatIconModule
+    MatIconModule,
+    MatButtonModule
   ],
   templateUrl: './carrello.component.html',
   styleUrl: './carrello.component.css'
@@ -26,11 +28,13 @@ export class CarrelloComponent implements OnInit{
 
   dettagliFilm: { [id: number]: Film } = {};
 
+  totale: number = 0;
+
   constructor(
-    private router: Router,
     private carrelloService: CarrelloService,
     private filmService: FilmService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -50,9 +54,16 @@ export class CarrelloComponent implements OnInit{
                 ...film,
                 immagine: `/assets/img/${film.immagine}`
               };
+              this.totale = this.totale + (film.prezzo * dettaglio.quantita);
             });
           });
           this.dettagliCarrello = dettagli;
       });
   }
+  
+
+  acquistaDalCarrello(): void{
+    this.router.navigate([`pagamento`,this.idCliente]);
+  }
+  
 }

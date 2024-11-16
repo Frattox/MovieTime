@@ -1,8 +1,10 @@
 package org.example.movietime.services;
 
-import org.example.movietime.exceptionHandler.dto.CarrelloDTO;
-import org.example.movietime.exceptionHandler.dto.OrdineDTO;
+import org.example.movietime.dto.CarrelloDTO;
+import org.example.movietime.dto.DettaglioOrdineDTO;
+import org.example.movietime.dto.OrdineDTO;
 import org.example.movietime.exceptions.*;
+import org.example.movietime.mapper.DettaglioOrdineMapper;
 import org.example.movietime.mapper.OrdineMapper;
 import org.example.movietime.entities.*;
 import org.example.movietime.repositories.*;
@@ -240,6 +242,20 @@ public class OrdineService {
         }
         return OrdineMapper.toDTOList(page.getContent());
     }
+
+    @Transactional(readOnly = true)
+    public List<DettaglioOrdineDTO> getDettagliOrdine(
+            int idOrdine,
+            int idCliente,
+            int pageNumber
+    ) throws ClienteNotFoundException, OrdineNotFoundException {
+        clienteRepository.findById(idCliente).orElseThrow(ClienteNotFoundException::new);
+        Pageable pageable = PageRequest.of(pageNumber, 20);
+        Ordine ordine = ordineRepository.findByIdAndCliente(idOrdine,idCliente).orElseThrow(OrdineNotFoundException::new);
+        Page<DettaglioOrdine> page = dettaglioOrdineRepository.findAllByOrdine(ordine,pageable);
+        return DettaglioOrdineMapper.toDTOList(page.getContent());
+    }
+
 
 
 }

@@ -3,7 +3,7 @@ package org.example.movietime.services;
 
 //La classe servirà per gestire le operazioni per il carrello
 
-import org.example.movietime.exceptionHandler.dto.DettaglioCarrelloDTO;
+import org.example.movietime.dto.DettaglioCarrelloDTO;
 import org.example.movietime.entities.Carrello;
 import org.example.movietime.entities.DettaglioCarrello;
 import org.example.movietime.entities.Film;

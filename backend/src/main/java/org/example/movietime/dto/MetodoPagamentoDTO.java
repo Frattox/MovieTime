@@ -1,4 +1,4 @@
-package org.example.movietime.exceptionHandler.dto;
+package org.example.movietime.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
