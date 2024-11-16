@@ -83,15 +83,14 @@ export class CarrelloService {
     }
     return EMPTY;
   }
-  
-  acquistaDalCarrello(indirizzo: string, idMetodoDiPagamento: number): Observable<String> {
+
+  acquistaDalCarrello(indirizzo: string, numero: number): Observable<String> {
     return this.ordiniService.acquistaDalCarrello(
       indirizzo,
       this.idC,
-      idMetodoDiPagamento,
+      numero,
       this.dettagliCarrello
     );
   }
-  
   
 }

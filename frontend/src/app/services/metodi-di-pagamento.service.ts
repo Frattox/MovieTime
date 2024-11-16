@@ -16,7 +16,7 @@ export class MetodiDiPagamentoService {
 
   private apiUrl = FilmService.apiUrl + "/cliente/metodi-pagamento";
 
-  private selectedMetodoDiPagamento: MetodoDiPagamento | null = null;
+  private selectedMetodoDiPagamento?: MetodoDiPagamento;
 
   constructor(private http: HttpClient) {}
 
@@ -32,7 +32,7 @@ export class MetodiDiPagamentoService {
     this.selectedMetodoDiPagamento = metodo;
   }
 
-  getSelectedMetodoDiPagamento(): MetodoDiPagamento | null {
+  getSelectedMetodoDiPagamento(): MetodoDiPagamento | undefined {
     return this.selectedMetodoDiPagamento;
   }
 
@@ -44,7 +44,7 @@ export class MetodiDiPagamentoService {
         tipo: this.selectedMetodoDiPagamento!.tipo
       }
     });
-    this.selectedMetodoDiPagamento = null;
+    this.selectedMetodoDiPagamento = undefined;
     return ret;
   }
 

@@ -67,27 +67,32 @@ export class OrdiniService {
   }
 
   acquistaDalCarrello(
-    indirizzo: string,
+    i: string,
     idC: number,
-    idMetodoDiPagamento: number,
+    n: number,
     dettagliCarrello: DettaglioCarrello[]
   ): Observable<String>{
+
     const carrelloDTO: CarrelloDTO = {
       idDettagliCarrello: dettagliCarrello.map(dettaglio => dettaglio.idDettaglioCarrello),
       quantita: dettagliCarrello.map(dettaglio => dettaglio.quantita),
       prezzi: dettagliCarrello.map(dettaglio => dettaglio.prezzoUnita)
     };
   
-    return this.http.post<string>(
+    var ret = this.http.post<string>(
       `${this.apiUrl}/acquistaDalCarrello`, 
       carrelloDTO,
       {
         params: {
           idCliente: idC,
-          indirizzo: indirizzo,
-          idMetodoDiPagamento: idMetodoDiPagamento
+          indirizzo: i,
+          numero: n
         }
       }
     );
+    ret.subscribe(message => {
+      console.log(message);
+    });
+    return ret;
   }
 }

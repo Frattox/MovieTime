@@ -31,6 +31,7 @@ public class OrdineController {
             @RequestBody CarrelloDTO carrelloDTO
             ) {
         try {
+            System.out.println(carrelloDTO.getIdDettagliCarrello().toString());
             ordineService.acquistaDalCarrello(
                     idCliente,
                     indirizzo,

@@ -43,17 +43,16 @@
 }
 <mat-list role="list">
     @for (metodo of metodiDiPagamento; track metodo.numero) {
-        <mat-radio-group [(ngModel)]="metodoSelezionato">
         <mat-list-item role="listitem">
-            <div (click)="selezionaMetodo(metodo)">
+        <div (click)="selezionaMetodo(metodo)">
                 <p-radioButton
                 name="category" 
                 [value]="metodo"
+                [(ngModel)]="metodoSelezionato"
                 label="{{metodo.tipo}} - {{metodo.numero}}"
                 />
               </div>
         </mat-list-item>
-    </mat-radio-group>
     } @empty {
         <p>il carrello è vuoto</p>
     }

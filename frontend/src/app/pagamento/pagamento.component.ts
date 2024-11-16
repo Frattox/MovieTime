@@ -27,12 +27,12 @@ import { CarrelloService } from '../services/carrello.service';
   styleUrls: ['./pagamento.component.css']
 })
 export class PagamentoComponent implements OnInit {
-  tipo: string  | null = null;
+  tipo: string  | null = '';
   indirizzo: string | null = null;
   numero: number | null = null;
   idCliente!: number;
   metodiDiPagamento!: MetodoDiPagamento[];
-  metodoSelezionato: any;
+  metodoSelezionato?: MetodoDiPagamento;
 
   constructor(
     private route: ActivatedRoute,
@@ -59,24 +59,42 @@ export class PagamentoComponent implements OnInit {
   }
 
   ordina(): void {
-    console.log(this.indirizzo);
-    if(!this.indirizzo)
-      return
-    if(!this.metodoDiPagamentoService.getSelectedMetodoDiPagamento()){
-      if(!this.numero || !this.tipo)
+    if (!this.indirizzo) {
+      this.snackBar.open('Inserisci un indirizzo!', 'Ok');
+      return;
+    }
+  
+    const metodoSelezionato = this.metodoDiPagamentoService.getSelectedMetodoDiPagamento();
+  
+    if (!metodoSelezionato) {
+      if (!this.numero || !this.tipo) {
+        this.snackBar.open('Inserisci un metodo di pagamento valido!', 'Ok');
         return;
-      var metodo : MetodoDiPagamento = {
+      }
+  
+      const metodo: MetodoDiPagamento = {
         idCliente: this.idCliente,
         numero: this.numero,
-        tipo: this.tipo
-      }
+        tipo: this.tipo,
+      };
+  
       this.metodoDiPagamentoService.setSelectedMetodoDiPagamento(metodo);
-    }else
-      this.metodoDiPagamentoService.addMetodoPagamento();
-      this.carrelloService.acquistaDalCarrello(this.indirizzo,this.metodoDiPagamentoService.getSelectedMetodoDiPagamento()!.numero);
-      this.router.navigate([``]);
-      this.snackBar.open('Ordine effettuato!', "Ok.");
+    }
+  
+    const metodoPagamentoFinale = this.metodoDiPagamentoService.getSelectedMetodoDiPagamento();
+    
+    if (!metodoPagamentoFinale || !metodoPagamentoFinale.numero) {
+      this.snackBar.open('Errore durante la selezione del metodo di pagamento!', 'Ok');
+      return;
+    }
+  
+    this.metodoDiPagamentoService.addMetodoPagamento();
+    this.carrelloService.acquistaDalCarrello(this.indirizzo, metodoPagamentoFinale.numero);
+  
+    this.router.navigate([``]);
+    this.snackBar.open('Ordine effettuato!', 'Ok');
   }
+  
 
   selezionaMetodo(metodo: MetodoDiPagamento): void {
     this.metodoSelezionato = metodo;
