@@ -37,7 +37,6 @@ export class MetodiDiPagamentoService {
   }
 
   addMetodoPagamento(): Observable<MetodoDiPagamento> {
-    console.log(this.selectedMetodoDiPagamento);
     const ret: Observable<MetodoDiPagamento> = this.http.post<MetodoDiPagamento>(this.apiUrl,null,{
       params: {
         idCliente: this.selectedMetodoDiPagamento!.idCliente,
@@ -46,7 +45,6 @@ export class MetodiDiPagamentoService {
       }
     });
     this.selectedMetodoDiPagamento = null;
-    ret.subscribe(metodo=>{console.log(metodo)});
     return ret;
   }
 

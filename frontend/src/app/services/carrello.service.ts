@@ -1,7 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Film, FilmService } from './film.service';
 import { HttpClient } from '@angular/common/http';
-import { Observable, EMPTY  } from 'rxjs';
+import { Observable, EMPTY, tap  } from 'rxjs';
+import { OrdiniService } from './ordini.service';
+
+export interface Carrello{
+  idCliente: number;
+  indirizzo: string;
+  idMetodoDiPagamento: number;
+}
 
 export interface DettaglioCarrello {
   idDettaglioCarrello: number;
@@ -11,6 +18,7 @@ export interface DettaglioCarrello {
   quantita: number;
 }
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -18,21 +26,38 @@ export class CarrelloService {
 
   private apiUrl = FilmService.apiUrl + "/carrello";
 
+  private idC = 0;
+
   private selectedDettaglioCarrello : DettaglioCarrello | null = null;
 
-  constructor(private http: HttpClient) {}
+  private dettagliCarrello: DettaglioCarrello[] = [];
 
-  getDettagliCarrello(idC: number, pageNumber: number = 0, s: string, o: string): Observable<DettaglioCarrello[]> {
+  constructor(private http: HttpClient, private ordiniService: OrdiniService) {}
+
+  getDettagliCarrello(
+    idC: number,
+    pageNumber: number = 0,
+    sortBy: string,
+    order: string
+  ): Observable<DettaglioCarrello[]> {
+    this.idC = idC;
     return this.http.get<DettaglioCarrello[]>(
-      `${this.apiUrl}/dettagli-carrello`, {
+      `${this.apiUrl}/dettagli-carrello`,
+      {
         params: {
-          idCliente: idC,
-          p: pageNumber,
-          sortBy: s,
-          order: o
+          idCliente: idC.toString(),
+          p: pageNumber.toString(),
+          sortBy,
+          order
         }
-      });
+      }
+    ).pipe(
+      tap(dettagli => {
+        this.dettagliCarrello = dettagli;
+      })
+    );
   }
+  
 
   setSelectedDettaglio(dettaglio: DettaglioCarrello): void {
     this.selectedDettaglioCarrello = dettaglio;
@@ -59,6 +84,14 @@ export class CarrelloService {
     return EMPTY;
   }
   
+  acquistaDalCarrello(indirizzo: string, idMetodoDiPagamento: number): Observable<String> {
+    return this.ordiniService.acquistaDalCarrello(
+      indirizzo,
+      this.idC,
+      idMetodoDiPagamento,
+      this.dettagliCarrello
+    );
+  }
   
   
 }

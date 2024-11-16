@@ -3,6 +3,7 @@ package org.example.movietime.services;
 import org.example.movietime.dto.ClienteDTO;
 import org.example.movietime.dto.MetodoPagamentoDTO;
 import org.example.movietime.entities.Cliente;
+import org.example.movietime.entities.MetodoPagamento;
 import org.example.movietime.mapper.ClienteMapper;
 import org.example.movietime.mapper.MetodoPagamentoMapper;
 import org.example.movietime.repositories.MetodoPagamentoRepository;
@@ -31,8 +32,17 @@ public class ClienteService {
     public void addMetodoPagamento(
             int idCliente,
             int numero,
-            int tipo){
-        //TODO
+            String tipo) throws ClienteNotFoundException {
+        if(idCliente<=0 || numero <= 0 || tipo==null || tipo.isEmpty())
+            throw new IllegalArgumentException("Dati carta non validi.");
+        Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(ClienteNotFoundException::new);
+        if(!metodoPagamentoRepository.existsByNumeroAndCliente(numero,cliente)) {
+            MetodoPagamento metodoPagamento = new MetodoPagamento();
+            metodoPagamento.setCliente(cliente);
+            metodoPagamento.setTipo(tipo);
+            metodoPagamento.setNumero(numero);
+            metodoPagamentoRepository.save(metodoPagamento);
+        }
     }
 
     @Transactional(readOnly = true)

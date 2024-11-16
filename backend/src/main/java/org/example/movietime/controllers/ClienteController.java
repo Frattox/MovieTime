@@ -6,10 +6,7 @@ import org.example.movietime.dto.ClienteDTO;
 import org.example.movietime.services.ClienteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -45,4 +42,22 @@ public class ClienteController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+
+    @PostMapping("/metodi-pagamento")
+    public ResponseEntity<String> addMetodoPagamento(
+            @RequestParam("idCliente") int idCliente,
+            @RequestParam("numero") int numero,
+            @RequestParam("tipo") String tipo
+    ){
+        try {
+            clienteService.addMetodoPagamento(idCliente, numero, tipo);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Metodo di pagamento aggiunto con successo.");
+        } catch (ClienteNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente non trovato.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+
 }

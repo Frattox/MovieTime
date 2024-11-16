@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { FilmService } from './film.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { DettaglioCarrello } from './carrello.service';
 
 export interface Ordine{
   idOrdine: number;
@@ -15,6 +16,12 @@ export interface DettaglioOrdine{
   quantita: number;
   prezzoUnita: number;
   filmId: number;
+}
+
+export interface CarrelloDTO {
+  idDettagliCarrello: number[];  
+  quantita: number[];            
+  prezzi: number[];              
 }
 
 @Injectable({
@@ -57,5 +64,30 @@ export class OrdiniService {
 
   getSelectedDettaglio(): Ordine | null {
     return this.selectedOrdine;
+  }
+
+  acquistaDalCarrello(
+    indirizzo: string,
+    idC: number,
+    idMetodoDiPagamento: number,
+    dettagliCarrello: DettaglioCarrello[]
+  ): Observable<String>{
+    const carrelloDTO: CarrelloDTO = {
+      idDettagliCarrello: dettagliCarrello.map(dettaglio => dettaglio.idDettaglioCarrello),
+      quantita: dettagliCarrello.map(dettaglio => dettaglio.quantita),
+      prezzi: dettagliCarrello.map(dettaglio => dettaglio.prezzoUnita)
+    };
+  
+    return this.http.post<string>(
+      `${this.apiUrl}/acquistaDalCarrello`, 
+      carrelloDTO,
+      {
+        params: {
+          idCliente: idC,
+          indirizzo: indirizzo,
+          idMetodoDiPagamento: idMetodoDiPagamento
+        }
+      }
+    );
   }
 }

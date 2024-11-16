@@ -1,24 +1,24 @@
 package org.example.movietime.mapper;
 
 import org.example.movietime.dto.MetodoPagamentoDTO;
+import org.example.movietime.entities.Cliente;
 import org.example.movietime.entities.MetodoPagamento;
+import org.example.movietime.repositories.ClienteRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class MetodoPagamentoMapper {
 
-    public static MetodoPagamento toMetodoPagamento(MetodoPagamentoDTO dto) {
+    public static MetodoPagamento toMetodoPagamento(MetodoPagamentoDTO dto, Cliente cliente) {
         if (dto == null) {
             return null;
         }
-        return new MetodoPagamento(
-                dto.getIdMetodoPagamento(),
-                dto.getTipo(),
-                dto.getNumero(),
-                //todo: da gestire dto
-                null
-        );
+        MetodoPagamento metodoPagamento = new MetodoPagamento();
+        metodoPagamento.setNumero(dto.getNumero());
+        metodoPagamento.setTipo(dto.getTipo());
+        metodoPagamento.setCliente(cliente);
+        return metodoPagamento;
     }
 
     public static MetodoPagamentoDTO toDTO(MetodoPagamento metodoPagamento) {
@@ -26,10 +26,9 @@ public class MetodoPagamentoMapper {
             return null;
         }
         return new MetodoPagamentoDTO(
-                metodoPagamento.getIdMetodoPagamento(),
                 metodoPagamento.getTipo(),
                 metodoPagamento.getNumero(),
-                metodoPagamento.getCliente() != null ? metodoPagamento.getCliente().getIdCliente() : 0 // Recupera l'ID del cliente
+                metodoPagamento.getCliente() != null ? metodoPagamento.getCliente().getIdCliente() : 0
         );
     }
 

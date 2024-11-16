@@ -11,7 +11,9 @@ import java.util.Optional;
 @Repository
 public interface MetodoPagamentoRepository extends JpaRepository<MetodoPagamento,Integer> {
 
-    Optional<MetodoPagamento> findByIdMetodoPagamentoAndCliente(int idMetodoDiPagamento, Cliente cliente);
+    boolean existsByNumeroAndCliente(int numero, Cliente cliente);
+
+    Optional<MetodoPagamento> findByNumeroAndCliente(int numero, Cliente cliente);
 
     List<MetodoPagamento> findAllByCliente(Cliente cliente);
 

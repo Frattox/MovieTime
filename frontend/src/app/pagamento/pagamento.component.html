@@ -1,3 +1,17 @@
+<h3 class="form-title">Inserisci indirizzo</h3>
+<div class="container">
+    <div class="form-card">
+        <p-floatLabel class="input-field">
+            <input
+                pInputText
+                class="ng-invalid ng-dirty"
+                required  
+                id="tipo"
+                [(ngModel)]="indirizzo" />
+                <label for="tipo">Indirizzo</label>
+        </p-floatLabel>
+    </div>
+</div>
 <h3 class="form-title">Inserisci metodo di pagamento</h3>
 <div class="container">
     <div class="form-card">
@@ -25,10 +39,11 @@
 </div>
 
 @if (metodiDiPagamento) {
-<h3 class="form-title">Seleziona un metodo di pagamento esistente</h3>
+<h3 class="form-title">...oppure seleziona un metodo di pagamento esistente</h3>
 }
 <mat-list role="list">
     @for (metodo of metodiDiPagamento; track metodo.numero) {
+        <mat-radio-group [(ngModel)]="metodoSelezionato">
         <mat-list-item role="listitem">
             <div (click)="selezionaMetodo(metodo)">
                 <p-radioButton
@@ -38,6 +53,7 @@
                 />
               </div>
         </mat-list-item>
+    </mat-radio-group>
     } @empty {
         <p>il carrello è vuoto</p>
     }

@@ -1,8 +1,10 @@
 package org.example.movietime.controllers;
 
 import org.example.movietime.dto.CarrelloDTO;
+import org.example.movietime.dto.DettaglioCarrelloDTO;
 import org.example.movietime.dto.DettaglioOrdineDTO;
 import org.example.movietime.dto.OrdineDTO;
+import org.example.movietime.entities.DettaglioCarrello;
 import org.example.movietime.exceptions.*;
 import org.example.movietime.services.OrdineService;
 import org.springframework.http.HttpStatus;
@@ -25,14 +27,14 @@ public class OrdineController {
     public ResponseEntity<String> acquistaDalCarrello(
             @RequestParam int idCliente,
             @RequestParam String indirizzo,
-            @RequestParam int idMetodoDiPagamento,
+            @RequestParam int numero,
             @RequestBody CarrelloDTO carrelloDTO
             ) {
         try {
             ordineService.acquistaDalCarrello(
                     idCliente,
                     indirizzo,
-                    idMetodoDiPagamento,
+                    numero,
                     carrelloDTO
             );
             return ResponseEntity.status(HttpStatus.CREATED).body("Ordine creato con successo");

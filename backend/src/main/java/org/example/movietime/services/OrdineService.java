@@ -1,6 +1,7 @@
 package org.example.movietime.services;
 
 import org.example.movietime.dto.CarrelloDTO;
+import org.example.movietime.dto.DettaglioCarrelloDTO;
 import org.example.movietime.dto.DettaglioOrdineDTO;
 import org.example.movietime.dto.OrdineDTO;
 import org.example.movietime.exceptions.*;
@@ -50,7 +51,7 @@ public class OrdineService {
     public void acquistaDalCarrello(
             int idCliente,
             String indirizzo,
-            int idMetodoDiPagamento,
+            int numero,
             CarrelloDTO carrelloDTO
     )
             throws FilmWornOutException, ClienteNotFoundException, FilmNotFoundException, DettaglioCarrelloNotFoundException, CarrelloNotFoundException, MetodoDiPagamentoNotFoundException {
@@ -59,12 +60,12 @@ public class OrdineService {
         List<Integer> quantita = carrelloDTO.getQuantita();
         List<Float> prezzi = carrelloDTO.getPrezzi();
 
-        Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(ClienteNotFoundException::new);
+        clienteRepository.findById(idCliente).orElseThrow(ClienteNotFoundException::new);
 
         Carrello carrello = carrelloRepository.findByIdCliente(idCliente)
                 .orElseThrow(CarrelloNotFoundException::new);
 
-        MetodoPagamento metodoPagamento = getMetodoPagamento(idMetodoDiPagamento, idMetodoDiPagamento);
+        MetodoPagamento metodoPagamento = getMetodoPagamento(numero, idCliente);
 
         //la lista di id dei dettagli carrello me la invia il client e da lì verifico che non esistono incongruenze con il db
         List<DettaglioCarrello> dettagliCarrello = new LinkedList<>();
@@ -76,7 +77,7 @@ public class OrdineService {
             dettagliCarrello.add(dettaglioCarrello);
         }
 
-        controllaDettagliCarrello(dettagliCarrello,quantita,prezzi);
+        List<Integer> quantityVaried = controllaDettagliCarrello(dettagliCarrello,quantita,prezzi);
 
         //creo il nuovo ordine
         Ordine ordine = new Ordine();
@@ -86,13 +87,16 @@ public class OrdineService {
         ordine.setStato("Preparazione");
         ordine.setDataOrdine(LocalDateTime.now());
 
-        aggiornaOrdine(ordine,dettagliCarrello, idDettagliCarrello);
+        aggiornaOrdine(ordine,dettagliCarrello, idDettagliCarrello, quantita, quantityVaried);
     }
 
-    private void controllaDettagliCarrello(
+    private List<Integer> controllaDettagliCarrello(
             List<DettaglioCarrello> dettagliCarrello,
             List<Integer> quantita,
             List<Float> prezzi) {
+        List<Integer> quantityVariedIndex = new ArrayList<>();
+        if(dettagliCarrello==null || quantita==null || prezzi==null)
+            throw new InvalidParameterException("Lista nulla");
         //hanno la stessa grandezza
         if(dettagliCarrello.size()!=quantita.size() || dettagliCarrello.size()!=prezzi.size())
             throw new InvalidParameterException("size");
@@ -100,33 +104,49 @@ public class OrdineService {
         for(int i=0; i<dettagliCarrello.size();i++){
             //corrispondono le quantita
             int q = dettagliCarrello.get(i).getQuantita();
-            if(q!=quantita.get(i)) throw new InvalidParameterException("quantita");
+            if(q>quantita.get(i))
+                quantityVariedIndex.add(i);
+            if(q!=quantita.get(i))
+                throw new InvalidParameterException("quantita'");
             //corrispondono i prezzi
             float p = dettagliCarrello.get(i).getPrezzoUnita();
             if(p!=prezzi.get(i)) throw new InvalidParameterException("prezzo");
         }
+        return quantityVariedIndex;
     }
 
-        @Transactional
+    @Transactional
     protected void aggiornaOrdine(
             Ordine ordine,
             List<DettaglioCarrello> dettagliCarrello,
-            List<Integer> idDettagliCarrello
+            List<Integer> idDettagliCarrello,
+            List<Integer> quantita,
+            List<Integer> quantityVaried
         ) throws FilmWornOutException, FilmNotFoundException, ClienteNotFoundException, CarrelloNotFoundException, MetodoDiPagamentoNotFoundException {
         List<DettaglioOrdine> dettagliOrdine = new LinkedList<>();
         Map<Film,Integer> films = new HashMap<>();
 
+        //gestisco il caso in cui è diversa la quantità (maggiore) nel DB
+        List<DettaglioCarrello> dettagliCarrelloDiversi = new ArrayList<>();
+        for(int i: quantityVaried){
+            DettaglioCarrello dettaglioCarrello = dettagliCarrello.get(i);
+            dettaglioCarrello.setQuantita(dettaglioCarrello.getQuantita()-quantita.get(i));
+            dettagliCarrelloDiversi.add(dettaglioCarrello);
+        }
+        for(int i: quantityVaried){
+            idDettagliCarrello.remove(i);
+        }
+
         //prima prendo le informazioni del carrello e genero come un nuovo ordine
-        for(DettaglioCarrello dettaglioCarrello: dettagliCarrello)
-        {
+        for(DettaglioCarrello dettaglioCarrello: dettagliCarrello) {
             DettaglioOrdine dettaglioOrdine = new DettaglioOrdine();
 
             //verifico prima che esiste la disponibilità
             Film film = dettaglioCarrello.getFilm();
             int newQuantity = film.getQuantita() - dettaglioCarrello.getQuantita();
-            if(newQuantity<=0) throw new FilmWornOutException();
+            if (newQuantity <= 0) throw new FilmWornOutException();
 
-            films.put(film,newQuantity);
+            films.put(film, newQuantity);
 
             //se è disponibile, effettuo l'acquisto
             dettaglioOrdine.setOrdine(ordine);
@@ -137,7 +157,11 @@ public class OrdineService {
             dettagliOrdine.add(dettaglioOrdine);
         }
 
+        //elimino quelli invariati
         dettaglioCarrelloRepository.deleteAllById(idDettagliCarrello);
+
+        //aggiorno quelli variati
+        dettaglioCarrelloRepository.saveAll(dettagliCarrelloDiversi);
 
         ordine.setCarrello(carrelloRepository.findById(ordine.getCarrello().getIdCarrello()).orElseThrow(CarrelloNotFoundException::new));
         ordine.setMetodoPagamento(metodoPagamentoRepository.findById(ordine.getMetodoPagamento().getIdMetodoPagamento()).orElseThrow(MetodoDiPagamentoNotFoundException::new));
@@ -156,9 +180,9 @@ public class OrdineService {
     }
 
 
-    private MetodoPagamento getMetodoPagamento(int idMetodoDiPagamento, int idCliente) throws MetodoDiPagamentoNotFoundException, ClienteNotFoundException {
+    private MetodoPagamento getMetodoPagamento(int numero, int idCliente) throws MetodoDiPagamentoNotFoundException, ClienteNotFoundException {
         Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(ClienteNotFoundException::new);
-        return metodoPagamentoRepository.findByIdMetodoPagamentoAndCliente(idMetodoDiPagamento,cliente).orElseThrow(MetodoDiPagamentoNotFoundException::new);}
+        return metodoPagamentoRepository.findByNumeroAndCliente(numero,cliente).orElseThrow(MetodoDiPagamentoNotFoundException::new);}
 
     //cliccare un film e acquistare direttamente quel film, senza passare dal carrello
     @Transactional

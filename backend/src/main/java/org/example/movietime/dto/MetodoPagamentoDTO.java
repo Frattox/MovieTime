@@ -10,10 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MetodoPagamentoDTO {
-
-    @Min(1)
-    private int idMetodoPagamento;
-
     @NotBlank(message = "Il tipo non può essere vuoto")
     private String tipo;
 

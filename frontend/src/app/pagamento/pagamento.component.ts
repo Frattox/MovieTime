@@ -9,6 +9,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import {MatListModule} from '@angular/material/list';
+import { CarrelloService } from '../services/carrello.service';
 
 @Component({
   selector: 'app-pagamento',
@@ -26,15 +27,18 @@ import {MatListModule} from '@angular/material/list';
   styleUrls: ['./pagamento.component.css']
 })
 export class PagamentoComponent implements OnInit {
-  tipo: string = '';
-  numero!: number;
+  tipo: string  | null = null;
+  indirizzo: string | null = null;
+  numero: number | null = null;
   idCliente!: number;
   metodiDiPagamento!: MetodoDiPagamento[];
+  metodoSelezionato: any;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private metodoDiPagamentoService: MetodiDiPagamentoService,
+    private carrelloService: CarrelloService,
     private snackBar: MatSnackBar
   ) {}
 
@@ -55,20 +59,27 @@ export class PagamentoComponent implements OnInit {
   }
 
   ordina(): void {
+    console.log(this.indirizzo);
+    if(!this.indirizzo)
+      return
     if(!this.metodoDiPagamentoService.getSelectedMetodoDiPagamento()){
+      if(!this.numero || !this.tipo)
+        return;
       var metodo : MetodoDiPagamento = {
         idCliente: this.idCliente,
         numero: this.numero,
         tipo: this.tipo
       }
       this.metodoDiPagamentoService.setSelectedMetodoDiPagamento(metodo);
-    }
+    }else
       this.metodoDiPagamentoService.addMetodoPagamento();
+      this.carrelloService.acquistaDalCarrello(this.indirizzo,this.metodoDiPagamentoService.getSelectedMetodoDiPagamento()!.numero);
       this.router.navigate([``]);
       this.snackBar.open('Ordine effettuato!', "Ok.");
   }
 
   selezionaMetodo(metodo: MetodoDiPagamento): void {
+    this.metodoSelezionato = metodo;
     this.metodoDiPagamentoService.setSelectedMetodoDiPagamento(metodo)
   }
 }
