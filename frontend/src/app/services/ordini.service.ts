@@ -78,7 +78,6 @@ export class OrdiniService {
       quantita: dettagliCarrello.map(dettaglio => dettaglio.quantita),
       prezzi: dettagliCarrello.map(dettaglio => dettaglio.prezzoUnita)
     };
-  
     var ret = this.http.post<string>(
       `${this.apiUrl}/acquistaDalCarrello`, 
       carrelloDTO,
@@ -89,10 +88,8 @@ export class OrdiniService {
           numero: n
         }
       }
-    );
-    ret.subscribe(message => {
-      console.log(message);
-    });
+    )
+    ret.subscribe();
     return ret;
   }
 }
