@@ -83,5 +83,7 @@ p-radioButton {
   .metodi-list div {
     margin: 10px 0;
   }
-  
-  
+
+mat-list-item{
+    text-align: center;
+}

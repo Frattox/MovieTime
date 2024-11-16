@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { FilmService } from './film.service';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 
 export interface MetodoDiPagamento {
-  idMetodoDiPagamento: number;
   idCliente: number;
   tipo: string;
   numero: number;
@@ -36,4 +35,19 @@ export class MetodiDiPagamentoService {
   getSelectedMetodoDiPagamento(): MetodoDiPagamento | null {
     return this.selectedMetodoDiPagamento;
   }
+
+  addMetodoPagamento(): Observable<MetodoDiPagamento> {
+    console.log(this.selectedMetodoDiPagamento);
+    const ret: Observable<MetodoDiPagamento> = this.http.post<MetodoDiPagamento>(this.apiUrl,null,{
+      params: {
+        idCliente: this.selectedMetodoDiPagamento!.idCliente,
+        numero: this.selectedMetodoDiPagamento!.numero,
+        tipo: this.selectedMetodoDiPagamento!.tipo
+      }
+    });
+    this.selectedMetodoDiPagamento = null;
+    ret.subscribe(metodo=>{console.log(metodo)});
+    return ret;
+  }
+
 }

@@ -24,17 +24,24 @@
     </div>
 </div>
 
+@if (metodiDiPagamento) {
 <h3 class="form-title">Seleziona un metodo di pagamento esistente</h3>
-<div class="metodi-list">
-  <div *ngFor="let metodo of metodiDiPagamento" (click)="selezionaMetodo(metodo)">
-    <p-radioButton
-    name="category" 
-    [value]="metodo" 
-    [(ngModel)]="metodoSelezionato"
-    label="{{metodo.tipo}} - {{metodo.numero}}"
-    />
-  </div>
-</div>
-<div class="ordina">
-    <p-button label="Ordina" (click)="ordina()"/>
+}
+<mat-list role="list">
+    @for (metodo of metodiDiPagamento; track metodo.numero) {
+        <mat-list-item role="listitem">
+            <div (click)="selezionaMetodo(metodo)">
+                <p-radioButton
+                name="category" 
+                [value]="metodo"
+                label="{{metodo.tipo}} - {{metodo.numero}}"
+                />
+              </div>
+        </mat-list-item>
+    } @empty {
+        <p>il carrello è vuoto</p>
+    }
+</mat-list>
+<div class="ordina" (click)="ordina()">
+    <p-button label="Ordina"/>
 </div>

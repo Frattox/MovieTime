@@ -5,8 +5,10 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { ButtonModule } from 'primeng/button';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MetodiDiPagamentoService, MetodoDiPagamento } from '../services/metodi-di-pagamento.service';
-import { CommonModule } from '@angular/common';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import { CommonModule } from '@angular/common';
+import {MatListModule} from '@angular/material/list';
 
 @Component({
   selector: 'app-pagamento',
@@ -16,8 +18,9 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     FormsModule,
     FloatLabelModule,
     ButtonModule,
+    RadioButtonModule,
     CommonModule,
-    RadioButtonModule
+    MatListModule
   ],
   templateUrl: './pagamento.component.html',
   styleUrls: ['./pagamento.component.css']
@@ -27,12 +30,12 @@ export class PagamentoComponent implements OnInit {
   numero!: number;
   idCliente!: number;
   metodiDiPagamento!: MetodoDiPagamento[];
-  metodoSelezionato?: MetodoDiPagamento;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private metodoDiPagamentoService: MetodiDiPagamentoService
+    private metodoDiPagamentoService: MetodiDiPagamentoService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -47,20 +50,25 @@ export class PagamentoComponent implements OnInit {
       .subscribe(metodiDiPagamento => {
         if (metodiDiPagamento != null) {
           this.metodiDiPagamento = metodiDiPagamento;
-          console.log(metodiDiPagamento);
         }
       });
   }
 
   ordina(): void {
-    if (this.metodoSelezionato) {
-      console.log("Metodo di pagamento selezionato: ", this.metodoSelezionato);
-    } else {
-      console.log("Inserimento nuovo metodo di pagamento: ", this.tipo, this.numero);
+    if(!this.metodoDiPagamentoService.getSelectedMetodoDiPagamento()){
+      var metodo : MetodoDiPagamento = {
+        idCliente: this.idCliente,
+        numero: this.numero,
+        tipo: this.tipo
+      }
+      this.metodoDiPagamentoService.setSelectedMetodoDiPagamento(metodo);
     }
+      this.metodoDiPagamentoService.addMetodoPagamento();
+      this.router.navigate([``]);
+      this.snackBar.open('Ordine effettuato!', "Ok.");
   }
 
   selezionaMetodo(metodo: MetodoDiPagamento): void {
-    this.metodoSelezionato = metodo;
+    this.metodoDiPagamentoService.setSelectedMetodoDiPagamento(metodo)
   }
 }

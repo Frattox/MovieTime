@@ -21,7 +21,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class InfoFilmComponent implements OnInit{
 
-  quantity: number = 0;
+  quantity: number = 1;
 
   film: Film | null = null;
 
