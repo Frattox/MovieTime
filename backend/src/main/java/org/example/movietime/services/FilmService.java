@@ -55,8 +55,6 @@ public class FilmService {
         return page.getContent().stream().map(FilmMapper::toDTO).collect(Collectors.toList());
     }
 
-    //TODO: liste in ordine crescente, decrescente ecc.
-
 
 
 

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { OrdiniService, Ordine, DettaglioOrdine } from '../services/ordini.service';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FilmService, Film } from '../services/film.service';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 

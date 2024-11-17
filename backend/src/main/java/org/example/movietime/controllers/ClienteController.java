@@ -22,7 +22,9 @@ public class ClienteController {
     }
 
     @GetMapping
-    public ResponseEntity<ClienteDTO> getProfile(@RequestParam("idCliente") int idCliente){
+    public ResponseEntity<ClienteDTO> getProfile(
+            @RequestParam("idCliente") int idCliente
+    ){
         try{
             ClienteDTO clienteDTO = clienteService.getProfile(idCliente);
             return ResponseEntity.ok(clienteDTO);

@@ -16,4 +16,11 @@
 .home{
     cursor: pointer;
 }
+
+.search-input {
+    width: 200px;
+    margin-left: 10px;
+    border-radius: 4px;
+  }
+  
   

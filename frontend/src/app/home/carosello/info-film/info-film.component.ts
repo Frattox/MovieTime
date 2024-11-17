@@ -7,6 +7,7 @@ import { CarrelloService } from '../../../services/carrello.service';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { FormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-info-film',
@@ -29,7 +30,8 @@ export class InfoFilmComponent implements OnInit{
   constructor(
     private filmService: FilmService,
     private carrelloService: CarrelloService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -51,6 +53,7 @@ export class InfoFilmComponent implements OnInit{
         this.showPopup('Errore durante l\'aggiunta al carrello.');
       }
     });
+    this.router.navigate([``]);
   }
 
   showPopup(message: string): void {

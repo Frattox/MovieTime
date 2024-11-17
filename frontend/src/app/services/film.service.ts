@@ -30,6 +30,8 @@ export class FilmService {
 
   public static apiUrl = 'http://localhost:8080';
 
+  private baseUrl = FilmService.apiUrl + '/film';
+
   private selectedFilm: Film | null = null;
 
   constructor(private http: HttpClient) {}
@@ -49,5 +51,11 @@ export class FilmService {
 
   getSelectedFilm(): Film | null {
     return this.selectedFilm;
+  }
+
+  searchFilms(title: string, p: number = 0): Observable<Film[]>{
+    return this.http.get<any[]>(`${this.baseUrl}/search`, {
+      params: { title, page: p },
+    });
   }
 }

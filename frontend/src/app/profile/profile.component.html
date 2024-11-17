@@ -1,0 +1,11 @@
+<div class="profile-container">
+    <div class="profile-card">
+      <h2>Profilo Utente</h2>
+      <p><strong>Nome:</strong> {{ this.cliente.nome }}</p>
+      <p><strong>Cognome:</strong> {{ this.cliente.cognome }}</p>
+      <p><strong>Email:</strong> {{ this.cliente.email }}</p>
+      <p><strong>Data di Registrazione:</strong> {{ this.cliente.dataRegistrazione | date:'dd/MM/yyyy' }}</p>
+      <button (click)="logout()">Logout</button>
+    </div>
+  </div>
+  

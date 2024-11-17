@@ -1,0 +1,16 @@
+<div class="search-results-container">
+    <h2>Risultati per "{{ searchTerm }}"</h2>
+    @if(films.length>0){
+    <ul>
+      @for (film of this.films; track film.idFilm) {
+        <app-film-acquistabile
+        [film]="film"
+        (filmSelected)="selectFilm($event)"
+      ></app-film-acquistabile>
+    }
+    </ul>
+  }@else{
+    <p>Nessun risultato trovato.</p>
+  }
+  </div>
+  

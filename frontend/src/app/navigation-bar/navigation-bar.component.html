@@ -4,9 +4,17 @@
             Home
         </span>
         <span class="example-spacer"></span>
-        <mat-icon class="example-icon" aria-hidden="false" aria-label="Search icon">search</mat-icon>
+        <mat-icon class="example-icon" (click)="toggleSearch()" aria-hidden="false" aria-label="Search icon">search</mat-icon>
+        @if(searchActive){
+        <input
+            matInput
+            [(ngModel)]="searchTerm"
+            (keyup.enter)="searchFilms()"
+            class="search-input"
+        />
+        }
         <mat-icon class="example-icon" aria-hidden="false" aria-label="Orders icon" [routerLink]="['/ordini',getIdCliente()]">assignment</mat-icon>
         <mat-icon class="example-icon" aria-hidden="false" aria-label="Shopping cart icon" [routerLink]="['/carrello',getIdCliente()]">shopping_cart</mat-icon>
-        <mat-icon class="example-icon" aria-hidden="false" aria-label="User profile icon">person</mat-icon>
+        <mat-icon class="example-icon" aria-hidden="false" aria-label="User profile icon" [routerLink]="['/profile',getIdCliente()]">person</mat-icon>
     </mat-toolbar-row>
 </mat-toolbar>

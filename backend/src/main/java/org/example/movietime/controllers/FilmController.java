@@ -51,7 +51,9 @@ public class FilmController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<FilmDTO>> searchFilms(@RequestParam @NotBlank String title, @RequestParam(defaultValue = "0") @Min(0) int page) {
+    public ResponseEntity<List<FilmDTO>> searchFilms(
+            @RequestParam @NotBlank String title,
+            @RequestParam(defaultValue = "0") @Min(0) int page) {
         List<FilmDTO> films = filmService.getAllFilmsLike(title, page);
         return ResponseEntity.ok(films);
     }

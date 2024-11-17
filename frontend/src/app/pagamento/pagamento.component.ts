@@ -8,7 +8,7 @@ import { MetodiDiPagamentoService, MetodoDiPagamento } from '../services/metodi-
 import { RadioButtonModule } from 'primeng/radiobutton';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
-import {MatListModule} from '@angular/material/list';
+import { MatListModule } from '@angular/material/list';
 import { CarrelloService } from '../services/carrello.service';
 
 @Component({

@@ -29,9 +29,6 @@ public class Cliente {
     @Basic
     @Column(name = "email", nullable = false, length = -1)
     private String email;
-    @Basic
-    @Column(name = "password", nullable = false, length = -1)
-    private String password;
 
     @CreatedDate //così crea automaticamente la data al momento della registrazione
     @Basic
