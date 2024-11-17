@@ -35,7 +35,7 @@ export class OrdiniService {
 
   constructor(private http: HttpClient) {}
 
-  getOrdini(idC:number, p: number = 0, o: string = ''): Observable<Ordine[]>{
+  getOrdini(idC:number, p: number = 0, o: string = ''){
     return this.http.get<Ordine[]>(
       `${this.apiUrl}`, {
         params: {
