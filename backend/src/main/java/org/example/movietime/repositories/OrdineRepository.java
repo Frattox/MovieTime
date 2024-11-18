@@ -18,7 +18,7 @@ public interface OrdineRepository extends JpaRepository<Ordine,Integer> {
     @Query("SELECT o FROM Ordine o, Carrello c WHERE o.idOrdine=:idOrdine AND o.carrello.idCarrello=c.idCarrello AND c.cliente.idCliente=:idCliente")
     Optional<Ordine> findByIdAndCliente(@Param("idOrdine") int idOrdine,@Param("idCliente") int idCliente);
 
-    @Query("SELECT o FROM Ordine o, Carrello c WHERE o.carrello.idCarrello=c.idCarrello AND c.cliente.idCliente=:idCliente")
+    @Query("SELECT o FROM Ordine o WHERE o.carrello.cliente.idCliente = :idCliente")
     Page<Ordine> findAllByCliente(@Param("idCliente") int idCliente, Pageable pageable);
 
     @Query("SELECT o FROM Ordine o, Carrello c WHERE o.carrello.idCarrello=c.idCarrello AND c.cliente.idCliente=:idCliente ORDER BY o.dataOrdine DESC")

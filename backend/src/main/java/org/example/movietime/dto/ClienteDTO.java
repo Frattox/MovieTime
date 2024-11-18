@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
@@ -29,5 +30,5 @@ public class ClienteDTO {
     private String email;
 
     @NotNull(message = "La data di registrazione non può essere null")
-    private Date dataRegistrazione;
+    private LocalDate dataRegistrazione;
 }

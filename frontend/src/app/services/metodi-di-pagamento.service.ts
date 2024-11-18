@@ -42,7 +42,10 @@ export class MetodiDiPagamentoService {
   }
 
   addMetodoPagamento(): Observable<MetodoDiPagamento> {
-    const ret: Observable<MetodoDiPagamento> = this.http.post<MetodoDiPagamento>(this.apiUrl,null,{
+    const ret: Observable<MetodoDiPagamento> = this.http.post<MetodoDiPagamento>(
+      this.apiUrl,
+      null,
+      {
       params: {
         numero: this.selectedMetodoDiPagamento!.numero,
         tipo: this.selectedMetodoDiPagamento!.tipo

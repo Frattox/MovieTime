@@ -24,7 +24,7 @@ export class ProfileService {
     private oauthService: OAuthService
   ) {}
 
-  getProfile(idC:number): Observable<Cliente>{
+  getProfile(): Observable<Cliente>{
     return this.http.get<Cliente>(
       `${this.apiUrl}`, {
         headers: {
@@ -32,5 +32,21 @@ export class ProfileService {
         }
       }
     );
-    }
+  }
+
+  addCliente(): Observable<String>{
+    const ret: Observable<String> = this.http.post<String>(
+      this.apiUrl,
+      null,
+      {
+        headers: {
+          'Authorization':`Bearer ${this.oauthService.getAccessToken()}`
+        }
+      }
+    );
+    ret.subscribe(message => {
+      console.log(message);
+    });
+    return ret;
+  }
 }

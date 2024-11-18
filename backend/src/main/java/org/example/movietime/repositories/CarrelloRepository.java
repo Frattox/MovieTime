@@ -14,4 +14,6 @@ public interface CarrelloRepository extends JpaRepository<Carrello, Integer> {
 
     @Query("SELECT c FROM Carrello c WHERE c.cliente.idCliente=?1")
     Optional<Carrello> findByIdCliente(int idCliente);
+
+    boolean existsByCliente(Cliente cliente);
 }

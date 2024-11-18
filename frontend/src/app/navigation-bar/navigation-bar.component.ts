@@ -5,8 +5,7 @@ import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Film, FilmService } from '../services/film.service';
-
+import { Film } from '../services/film.service';
 
 @Component({
   selector: 'app-navigation-bar',
@@ -32,11 +31,17 @@ export class NavigationBarComponent {
   ) {}
 
   openCarrello(): void {
+    this.searchActive = false;
     this.router.navigate([`/carrello`]);
   }
 
   goHome(): void{
+    this.searchActive = false;
     this.router.navigate([``]);
+  }
+
+  deactiveSearch(){
+    this.searchActive = false;
   }
 
   toggleSearch(): void {

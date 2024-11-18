@@ -6,6 +6,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Table(name = "cliente")
@@ -27,11 +29,11 @@ public class Cliente {
     @Column(name = "cognome", nullable = false, length = -1)
     private String cognome;
     @Basic
-    @Column(name = "email", nullable = false, length = -1)
+    @Column(name = "email",unique = true ,nullable = false, length = -1)
     private String email;
 
     @CreatedDate //così crea automaticamente la data al momento della registrazione
     @Basic
     @Column(name = "data_registrazione", nullable = false)
-    private Date dataRegistrazione;
+    private LocalDate dataRegistrazione;
 }

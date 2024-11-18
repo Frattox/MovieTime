@@ -13,8 +13,8 @@
             class="search-input"
         />
         }
-        <mat-icon class="example-icon" aria-hidden="false" aria-label="Orders icon" [routerLink]="['/ordini']">assignment</mat-icon>
-        <mat-icon class="example-icon" aria-hidden="false" aria-label="Shopping cart icon" [routerLink]="['/carrello']">shopping_cart</mat-icon>
-        <mat-icon class="example-icon" aria-hidden="false" aria-label="User profile icon" [routerLink]="['/profile']">person</mat-icon>
+        <mat-icon class="example-icon" aria-hidden="false" aria-label="Orders icon" [routerLink]="['/ordini']" (click)="deactiveSearch()">assignment</mat-icon>
+        <mat-icon class="example-icon" aria-hidden="false" aria-label="Shopping cart icon" [routerLink]="['/carrello']" (click)="deactiveSearch()">shopping_cart</mat-icon>
+        <mat-icon class="example-icon" aria-hidden="false" aria-label="User profile icon" [routerLink]="['/profile']" (click)="deactiveSearch()">person</mat-icon>
     </mat-toolbar-row>
 </mat-toolbar>

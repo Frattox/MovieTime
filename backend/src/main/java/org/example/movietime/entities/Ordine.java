@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
-import java.util.List;
 
 //@Data specifica setter, getter, toString, equals e hashCode
 @Data
@@ -15,6 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "ordine")
 public class Ordine {
+
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Id
     @Column(name = "id_ordine", nullable = false)
@@ -37,5 +36,4 @@ public class Ordine {
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_metodo_pagamento", nullable = false)
     private MetodoPagamento metodoPagamento;
-
 }
