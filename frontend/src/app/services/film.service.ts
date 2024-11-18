@@ -28,7 +28,7 @@ export interface Regista{
 })
 export class FilmService {
 
-  public static apiUrl = 'http://localhost:8080';
+  public static apiUrl = 'http://localhost:8081';
 
   private baseUrl = FilmService.apiUrl + '/film';
 
