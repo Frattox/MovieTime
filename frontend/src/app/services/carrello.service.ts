@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Film, FilmService } from './film.service';
+import { FilmService } from './film.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, EMPTY, tap  } from 'rxjs';
 import { OrdiniService } from './ordini.service';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 export interface Carrello{
   idCliente: number;
@@ -26,29 +27,32 @@ export class CarrelloService {
 
   private apiUrl = FilmService.apiUrl + "/carrello";
 
-  private idC = 0;
-
   private selectedDettaglioCarrello : DettaglioCarrello | null = null;
 
   private dettagliCarrello: DettaglioCarrello[] = [];
 
-  constructor(private http: HttpClient, private ordiniService: OrdiniService) {}
+  constructor(
+    private http: HttpClient,
+    private ordiniService: OrdiniService,
+    private oauthService: OAuthService
+  ) {}
 
   getDettagliCarrello(
-    idC: number,
     pageNumber: number = 0,
     sortBy: string,
     order: string
   ): Observable<DettaglioCarrello[]> {
-    this.idC = idC;
+    console.log(this.oauthService.getAccessToken());
     return this.http.get<DettaglioCarrello[]>(
       `${this.apiUrl}/dettagli-carrello`,
       {
         params: {
-          idCliente: idC.toString(),
           p: pageNumber.toString(),
           sortBy,
           order
+        },
+        headers: {
+          'Authorization':`Bearer ${this.oauthService.getAccessToken()}`
         }
       }
     ).pipe(
@@ -67,16 +71,18 @@ export class CarrelloService {
     return this.selectedDettaglioCarrello;
   }
 
-  aggiungiAlCarrello(idCliente: number, idFilm: number | undefined, quantity: number): Observable<string> {
+  aggiungiAlCarrello(idFilm: number | undefined, quantity: number): Observable<string> {
     if(idFilm){
       return this.http.post<string>(
         `${this.apiUrl}/aggiungi`, 
         null,
         {
           params: {
-            idCliente: idCliente,
             idFilm: idFilm,
             quantity: quantity
+          },
+          headers: {
+            'Authorization':`Bearer ${this.oauthService.getAccessToken()}`
           }
         }
       );
@@ -87,7 +93,6 @@ export class CarrelloService {
   acquistaDalCarrello(indirizzo: string, numero: number): Observable<String> {
     return this.ordiniService.acquistaDalCarrello(
       indirizzo,
-      this.idC,
       numero,
       this.dettagliCarrello
     );

@@ -3,6 +3,7 @@ import { FilmService } from './film.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { DettaglioCarrello } from './carrello.service';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 export interface Ordine{
   idOrdine: number;
@@ -33,26 +34,33 @@ export class OrdiniService {
 
   private selectedOrdine : Ordine | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private oauthService: OAuthService
+  ) {}
 
-  getOrdini(idC:number, p: number = 0, o: string = ''){
+  getOrdini(p: number = 0, o: string = ''){
     return this.http.get<Ordine[]>(
       `${this.apiUrl}`, {
         params: {
-          idCliente: idC,
           pageNumber: p,
           order: o
+        },
+        headers: {
+          'Authorization':`Bearer ${this.oauthService.getAccessToken()}`
         }
       });
   }
 
-  getDettagliOrdine(idO: number, idC: number, p: number = 0): Observable<DettaglioOrdine[]> {
+  getDettagliOrdine(idO: number, p: number = 0): Observable<DettaglioOrdine[]> {
     return this.http.get<DettaglioOrdine[]>(
       `${this.apiUrl}/dettagli-ordine`, {
         params:{
           idOrdine: idO,
-          idCliente: idC,
           pageNumber: p
+        },
+        headers: {
+          'Authorization':`Bearer ${this.oauthService.getAccessToken()}`
         }
       }
     );
@@ -68,7 +76,6 @@ export class OrdiniService {
 
   acquistaDalCarrello(
     i: string,
-    idC: number,
     n: number,
     dettagliCarrello: DettaglioCarrello[]
   ): Observable<String>{
@@ -85,9 +92,11 @@ export class OrdiniService {
       carrelloDTO,
       {
         params: {
-          idCliente: idC,
           indirizzo: i,
           numero: n
+        },
+        headers: {
+          'Authorization':`Bearer ${this.oauthService.getAccessToken()}`
         }
       }
     )

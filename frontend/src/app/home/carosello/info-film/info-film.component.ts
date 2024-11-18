@@ -41,10 +41,9 @@ export class InfoFilmComponent implements OnInit{
   aggiungiAlCarrello(): void {
     if(this.quantity<=0)
       return;
-    const idCliente = 1;
     const idFilm = this.film?.idFilm;
   
-    this.carrelloService.aggiungiAlCarrello(idCliente, idFilm, this.quantity).subscribe({
+    this.carrelloService.aggiungiAlCarrello(idFilm, this.quantity).subscribe({
       next: (response) => {
         this.showPopup(`Film "${this.film?.titolo}" aggiunto al carrello!`);
       },

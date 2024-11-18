@@ -18,8 +18,6 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrls: ['./ordini.component.css']
 })
 export class OrdiniComponent implements OnInit {
-
-  idCliente!: number;
   ordini: Ordine[] | null = [];
 
   constructor(
@@ -29,14 +27,11 @@ export class OrdiniComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      this.idCliente = +params['idCliente'];
-    });
     this.loadOrdini();
   }
 
   loadOrdini(): void {
-    this.ordiniService.getOrdini(this.idCliente)
+    this.ordiniService.getOrdini()
       .subscribe(ordini => {
         if (ordini != null) {
           this.ordini = ordini;
@@ -46,6 +41,6 @@ export class OrdiniComponent implements OnInit {
 
   selectOrdine(ordine: Ordine): void{
     this.ordiniService.setSelectedOrdine(ordine);
-    this.router.navigate(['ordini', this.idCliente, ordine.idOrdine]);
+    this.router.navigate(['ordini', ordine.idOrdine]);
   }
 }

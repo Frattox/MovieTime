@@ -45,7 +45,7 @@ export class CarrelloComponent implements OnInit{
   }
 
   loadDettagliCarrello(): void {
-    this.carrelloService.getDettagliCarrello(this.idCliente, 0, 'titolo', 'asc')
+    this.carrelloService.getDettagliCarrello(0, 'titolo', 'asc')
       .subscribe(dettagli => {
         if(dettagli!=null)
           dettagli.forEach(dettaglio => {

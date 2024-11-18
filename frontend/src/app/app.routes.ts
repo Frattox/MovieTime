@@ -10,12 +10,12 @@ import { SearchComponent } from './search/search.component';
 
 export const routes: Routes = [
     {path:"",component:HomeComponent},
-    {path:"film/:idCliente",component:InfoFilmComponent},
-    {path:"carrello/:idCliente",component:CarrelloComponent},
-    {path:"ordini/:idCliente",component:OrdiniComponent},
-    {path:"ordini/:idCliente/:idOrdine",component:InfoOrdineComponent},
-    {path:"profile/:idCliente",component:ProfileComponent},
-    {path:"pagamento/:idCliente",component:PagamentoComponent},
+    {path:"film/:idFilm",component:InfoFilmComponent},
+    {path:"carrello",component:CarrelloComponent},
+    {path:"ordini",component:OrdiniComponent},
+    {path:"ordini/:idOrdine",component:InfoOrdineComponent},
+    {path:"profile",component:ProfileComponent},
+    {path:"pagamento",component:PagamentoComponent},
     {path:"search",component:SearchComponent}
 
 ];

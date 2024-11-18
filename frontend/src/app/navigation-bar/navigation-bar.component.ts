@@ -23,22 +23,16 @@ import { Film, FilmService } from '../services/film.service';
 })
 export class NavigationBarComponent {
 
-  private idCliente = 1;
   searchActive: boolean = false;
   searchTerm: string = '';
   films: Film[] = [];
 
   constructor(
-    private router: Router,
-    private filmService: FilmService
+    private router: Router
   ) {}
 
   openCarrello(): void {
-    this.router.navigate([`/carrello`, this.idCliente]);
-  }
-
-  getIdCliente(): number{
-    return this.idCliente;
+    this.router.navigate([`/carrello`]);
   }
 
   goHome(): void{

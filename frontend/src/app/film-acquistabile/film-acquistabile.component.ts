@@ -1,6 +1,5 @@
 import { Component, Input, Output, EventEmitter} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CarrelloService } from '../services/carrello.service';
 import { Router } from '@angular/router';
 
 @Component({
