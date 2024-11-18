@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { FilmService } from './film.service';
 import { HttpClient } from '@angular/common/http';
-import { catchError, Observable, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 export interface MetodoDiPagamento {
-  idCliente: number;
   tipo: string;
   numero: number;
 }
@@ -18,15 +18,19 @@ export class MetodiDiPagamentoService {
 
   private selectedMetodoDiPagamento?: MetodoDiPagamento;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private oauthService: OAuthService
+  ) {}
 
-  getMetodiPagamento(idC: number): Observable<MetodoDiPagamento[]> {
+  getMetodiPagamento(): Observable<MetodoDiPagamento[]> {
     this.selectedMetodoDiPagamento = undefined;
-    return this.http.get<MetodoDiPagamento[]>(this.apiUrl, {
-      params: {
-        idCliente: idC
+    return this.http.get<MetodoDiPagamento[]>(this.apiUrl,{
+      headers: {
+        'Authorization':`Bearer ${this.oauthService.getAccessToken()}`
       }
-    });
+    }
+    );
   }
 
   setSelectedMetodoDiPagamento(metodo: MetodoDiPagamento) {
@@ -40,9 +44,11 @@ export class MetodiDiPagamentoService {
   addMetodoPagamento(): Observable<MetodoDiPagamento> {
     const ret: Observable<MetodoDiPagamento> = this.http.post<MetodoDiPagamento>(this.apiUrl,null,{
       params: {
-        idCliente: this.selectedMetodoDiPagamento!.idCliente,
         numero: this.selectedMetodoDiPagamento!.numero,
         tipo: this.selectedMetodoDiPagamento!.tipo
+      },
+      headers: {
+        'Authorization':`Bearer ${this.oauthService.getAccessToken()}`
       }
     });
     ret.subscribe();

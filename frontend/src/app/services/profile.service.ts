@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { FilmService } from './film.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 export interface Cliente {
   idCliente: number;
@@ -18,13 +19,16 @@ export class ProfileService {
 
   private apiUrl = FilmService.apiUrl + "/cliente";
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private oauthService: OAuthService
+  ) {}
 
   getProfile(idC:number): Observable<Cliente>{
     return this.http.get<Cliente>(
       `${this.apiUrl}`, {
-        params: {
-          idCliente: idC
+        headers: {
+          'Authorization':`Bearer ${this.oauthService.getAccessToken()}`
         }
       }
     );

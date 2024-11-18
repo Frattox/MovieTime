@@ -12,7 +12,6 @@ import {MatListModule} from '@angular/material/list';
   styleUrl: './info-ordine.component.css'
 })
 export class InfoOrdineComponent implements OnInit{
-  idCliente!: number;
   idOrdine!: number;
   dettagliOrdine!: DettaglioOrdine[];
   dettagliFilm: { [id: number]: Film } = {};
@@ -24,14 +23,13 @@ export class InfoOrdineComponent implements OnInit{
 
   ngOnInit(): void{
     this.route.params.subscribe(params => {
-      this.idCliente = +params['idCliente'];
       this.idOrdine = +params['idOrdine']
     });
     this.loadDettagliOrdine();
   }
   loadDettagliOrdine():void{
     console.log(this.idOrdine);
-    this.ordiniService.getDettagliOrdine(this.idOrdine,this.idCliente).subscribe(dettagli =>{
+    this.ordiniService.getDettagliOrdine(this.idOrdine).subscribe(dettagli =>{
       if(dettagli!=null)
         dettagli.forEach(dettaglio => {
           this.filmService.getFilmById(dettaglio.filmId).subscribe(film => {

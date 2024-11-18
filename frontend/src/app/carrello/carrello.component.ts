@@ -63,7 +63,7 @@ export class CarrelloComponent implements OnInit{
   
 
   acquistaDalCarrello(): void{
-    this.router.navigate([`pagamento`,this.idCliente]);
+    this.router.navigate([`pagamento`]);
   }
   
 }

@@ -30,7 +30,6 @@ export class PagamentoComponent implements OnInit {
   tipo: string  | null = '';
   indirizzo: string | null = null;
   numero: number | null = null;
-  idCliente!: number;
   metodiDiPagamento!: MetodoDiPagamento[];
   metodoSelezionato?: MetodoDiPagamento;
 
@@ -43,14 +42,12 @@ export class PagamentoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      this.idCliente = +params['idCliente'];
-    });
+    this.route.params.subscribe();
     this.loadMetodiDiPagamento();
   }
 
   loadMetodiDiPagamento(): void {
-    this.metodoDiPagamentoService.getMetodiPagamento(this.idCliente)
+    this.metodoDiPagamentoService.getMetodiPagamento()
       .subscribe(metodiDiPagamento => {
         if (metodiDiPagamento != null) {
           this.metodiDiPagamento = metodiDiPagamento;
@@ -73,7 +70,6 @@ export class PagamentoComponent implements OnInit {
       }
   
       const metodo: MetodoDiPagamento = {
-        idCliente: this.idCliente,
         numero: this.numero,
         tipo: this.tipo,
       };
